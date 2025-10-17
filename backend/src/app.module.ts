@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Vehicle } from './entities/vehicle.entity';
 import { Service } from './entities/service.entity';
+import { ServicePricing } from './entities/service_pricing.entity';
 import { Order } from './entities/order.entity';
 import { Payment } from './entities/payment.entity';
 import { Review } from './entities/review.entity';
@@ -11,6 +12,7 @@ import { Notification } from './entities/notification.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { ServicesModule } from './services/services.module';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
       username: process.env.DB_USER || 'root',
       password: process.env.DB_PASS || '',
       database: process.env.DB_NAME || 'auto_service_platform',
-      entities: [User, Vehicle, Service, Order, Payment, Review, Notification],
+  entities: [User, Vehicle, Service, ServicePricing, Order, Payment, Review, Notification],
       synchronize: false, // IMPORTANT: Ne pas utiliser en production
       logging: process.env.NODE_ENV === 'development',
     }),
@@ -35,7 +37,8 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     // Modules de l'application
     AuthModule,
     UsersModule,
-  VehiclesModule,
+    VehiclesModule,
+    ServicesModule,
   ],
   controllers: [],
   providers: [],
