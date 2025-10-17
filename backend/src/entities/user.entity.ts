@@ -44,6 +44,32 @@ export class User {
   @Column({ type: 'boolean', default: true })
   is_verified: boolean;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  avatar_url?: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address?: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  city?: string;
+
+  @Column({ type: 'float', nullable: true })
+  latitude?: number;
+
+  @Column({ type: 'float', nullable: true })
+  longitude?: number;
+
+  @Column({
+    type: 'enum',
+    enum: ['active', 'inactive', 'banned'],
+    default: 'active',
+  })
+  status: 'active' | 'inactive' | 'banned';
+
+  // For workers: availability flag
+  @Column({ type: 'boolean', default: false })
+  is_available: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 

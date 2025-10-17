@@ -3,6 +3,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
   OneToMany,
@@ -27,14 +28,40 @@ export class Vehicle {
   @Column({ type: 'varchar', length: 20 })
   license_plate: string;
 
-  @Column({ type: 'varchar', length: 20 })
-  capacity: string;
+  @Column({
+    type: 'enum',
+    enum: ['car', 'truck', 'van', 'bike'],
+    default: 'car',
+  })
+  type: 'car' | 'truck' | 'van' | 'bike';
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  capacity?: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  color?: string;
+
+  @Column({ type: 'int', nullable: true })
+  year?: number;
 
   @Column({ type: 'boolean', default: true })
   is_available: boolean;
 
+  @Column({
+    type: 'enum',
+    enum: ['approved', 'pending', 'rejected'],
+    default: 'pending',
+  })
+  status: 'approved' | 'pending' | 'rejected';
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  documents_url?: string;
+
   @CreateDateColumn()
   created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 
   // Relations
   @ManyToOne(() => User, (user) => user.vehicles, { onDelete: 'CASCADE' })

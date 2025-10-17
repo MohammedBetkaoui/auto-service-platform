@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength, Matches, IsEnum, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength, Matches, IsEnum, IsPhoneNumber, IsOptional, IsUrl, IsLatitude, IsLongitude, IsBoolean } from 'class-validator';
 import { UserRole } from '../../entities/user.entity';
 
 export class RegisterDto {
@@ -30,4 +30,32 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Le rôle est requis' })
   @IsEnum(UserRole, { message: 'Le rôle doit être client, worker ou admin' })
   role: UserRole;
+
+  // Optional profile fields
+  @IsOptional()
+  @IsUrl({}, { message: 'avatar_url doit être une URL valide' })
+  @MaxLength(255)
+  avatar_url?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  city?: string;
+
+  @IsOptional()
+  @IsLatitude({ message: 'latitude invalide' })
+  latitude?: number;
+
+  @IsOptional()
+  @IsLongitude({ message: 'longitude invalide' })
+  longitude?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  is_available?: boolean;
 }
