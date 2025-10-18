@@ -12,6 +12,10 @@ import { Review } from './entities/review.entity';
 import { RatingsSummary } from './entities/ratings_summary.entity';
 import { Notification } from './entities/notification.entity';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ChatModule } from './chat/chat.module';
+import { Conversation } from './entities/conversation.entity';
+import { Message } from './entities/message.entity';
+import { Attachment } from './entities/attachment.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
@@ -34,7 +38,7 @@ import { ReviewsModule } from './reviews/reviews.module';
       username: process.env.DB_USER || 'root',
       password: process.env.DB_PASS || '',
       database: process.env.DB_NAME || 'auto_service_platform',
-  entities: [User, Vehicle, Service, ServicePricing, Order, OrderTracking, Payment, Review, RatingsSummary, Notification],
+  entities: [User, Vehicle, Service, ServicePricing, Order, OrderTracking, Payment, Review, RatingsSummary, Notification, Conversation, Message, Attachment],
       synchronize: false, // IMPORTANT: Ne pas utiliser en production
       logging: process.env.NODE_ENV === 'development',
     }),
@@ -50,6 +54,8 @@ import { ReviewsModule } from './reviews/reviews.module';
     ReviewsModule,
     // Notifications module
     NotificationsModule,
+  // Chat module
+  ChatModule,
   ],
   controllers: [],
   providers: [],
