@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : ven. 17 oct. 2025 à 22:32
+-- Généré le : sam. 18 oct. 2025 à 13:34
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -99,7 +99,27 @@ CREATE TABLE `services` (
   `description` text NOT NULL,
   `base_price` decimal(10,2) NOT NULL,
   `duration_estimate` varchar(50) NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `category` enum('wash','oil_change','repair','towing','battery','other') NOT NULL DEFAULT 'other',
+  `unit` enum('vehicle','hour','distance') NOT NULL DEFAULT 'vehicle',
+  `image_url` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `service_pricing`
+--
+
+CREATE TABLE `service_pricing` (
+  `id` int(11) NOT NULL,
+  `service_id` int(11) NOT NULL,
+  `vehicle_type` enum('car','truck','van','bike') NOT NULL,
+  `region` varchar(100) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -200,7 +220,18 @@ ALTER TABLE `reviews`
 --
 ALTER TABLE `services`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_is_active` (`is_active`);
+  ADD KEY `idx_is_active` (`is_active`),
+  ADD KEY `idx_services_category` (`category`),
+  ADD KEY `idx_services_is_active` (`is_active`);
+
+--
+-- Index pour la table `service_pricing`
+--
+ALTER TABLE `service_pricing`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_service_pricing_service_id` (`service_id`),
+  ADD KEY `idx_service_pricing_vehicle_type` (`vehicle_type`),
+  ADD KEY `idx_service_pricing_region` (`region`);
 
 --
 -- Index pour la table `users`
@@ -260,6 +291,12 @@ ALTER TABLE `services`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT pour la table `service_pricing`
+--
+ALTER TABLE `service_pricing`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
@@ -303,6 +340,12 @@ ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `reviews_ibfk_3` FOREIGN KEY (`worker_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `service_pricing`
+--
+ALTER TABLE `service_pricing`
+  ADD CONSTRAINT `fk_service_pricing_service` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `vehicles`
