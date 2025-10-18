@@ -51,7 +51,25 @@ export class Order {
   price: number;
 
   @Column({ type: 'varchar', length: 255 })
-  location: string;
+  address: string;
+
+  @Column({ type: 'varchar', length: 100 })
+  region: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 8, nullable: true })
+  latitude: number;
+
+  @Column({ type: 'decimal', precision: 11, scale: 8, nullable: true })
+  longitude: number;
+
+  @Column({ type: 'text', nullable: true })
+  notes: string;
+
+  @Column({ type: 'datetime', nullable: true })
+  start_time: Date;
+
+  @Column({ type: 'datetime', nullable: true })
+  end_time: Date;
 
   @CreateDateColumn()
   created_at: Date;
