@@ -54,7 +54,16 @@
       outDir: 'build',
     },
     server: {
-      port: 3000,
+      // Run frontend dev server on a different port to avoid collision with backend (which uses 3000)
+      port: 5173,
       open: true,
+      proxy: {
+        // Proxy API requests to the backend running on port 3000
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
   });

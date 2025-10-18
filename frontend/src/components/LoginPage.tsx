@@ -6,8 +6,11 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Checkbox } from './ui/checkbox';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
+import { useNavigate } from 'react-router-dom';
 
 type UserRole = 'client' | 'provider' | 'admin';
+
+import { useAuth } from '../context/AuthContext';
 
 export function LoginPage() {
   const [selectedRole, setSelectedRole] = useState<UserRole>('client');
@@ -15,6 +18,8 @@ export function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const auth = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     emailOrPhone: '',
@@ -30,26 +35,22 @@ export function LoginPage() {
     e.preventDefault();
     setError('');
 
-    // Validation
     if (!formData.emailOrPhone || !formData.password) {
       setError('Veuillez remplir tous les champs');
       return;
     }
 
     setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // login now expects { email, password }
+      await auth.login({ email: formData.emailOrPhone, password: formData.password });
+      // On success, navigate to dashboard (react-router)
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err?.message || 'Erreur lors de la connexion');
+    } finally {
       setIsLoading(false);
-      
-      // For demo: accept any email/password and redirect to dashboard
-      // In production, validate credentials with backend
-      if (formData.emailOrPhone && formData.password) {
-        window.location.hash = 'dashboard';
-      } else {
-        setError('Email ou mot de passe incorrect');
-      }
-    }, 1500);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -58,7 +59,7 @@ export function LoginPage() {
   };
 
   const handleBackToHome = () => {
-    window.location.hash = '';
+    navigate('/');
   };
 
   const getRoleLabel = (role: UserRole) => {
@@ -278,12 +279,9 @@ export function LoginPage() {
             <div className="mt-6 text-center">
               <p className="text-gray-600 text-sm">
                 Pas encore de compte ?{' '}
-                <a
-                  href="#register"
-                  className="text-[#0077FF] hover:underline"
-                >
+                <span onClick={() => navigate('/register')} className="text-[#0077FF] hover:underline cursor-pointer">
                   Créer un compte maintenant
-                </a>
+                </span>
               </p>
             </div>
           </div>

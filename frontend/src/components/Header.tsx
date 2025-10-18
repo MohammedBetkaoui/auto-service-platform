@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
+import { useAuth } from '../context/AuthContext';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const auth = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
@@ -42,12 +46,25 @@ export function Header() {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden lg:flex items-center gap-4">
-            <Button variant="ghost" className="text-[#1E1E1E]" onClick={() => window.location.hash = 'login'}>
-              Connexion
-            </Button>
-            <Button className="bg-[#0077FF] hover:bg-[#0066DD] text-white rounded-full px-6" onClick={() => window.location.hash = 'register'}>
-              Demander un service
-            </Button>
+            {!auth.user ? (
+              <>
+                <Button variant="ghost" className="text-[#1E1E1E]" onClick={() => navigate('/login')}>
+                  Connexion
+                </Button>
+                <Button className="bg-[#0077FF] hover:bg-[#0066DD] text-white rounded-full px-6" onClick={() => navigate('/register')}>
+                  S'inscrire
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" className="text-[#1E1E1E]" onClick={() => navigate('/dashboard')}>
+                  {auth.user.role === 'provider' ? 'Mon espace' : 'Tableau de bord'}
+                </Button>
+                <Button variant="outline" onClick={async () => { await auth.logout(); window.location.hash = ''; }}>
+                  Déconnexion
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -79,10 +96,23 @@ export function Header() {
                 Contact
               </a>
               <div className="flex flex-col gap-3 pt-4 border-t border-gray-200">
-                <Button variant="outline" onClick={() => { window.location.hash = 'login'; setMobileMenuOpen(false); }}>Connexion</Button>
-                <Button className="bg-[#0077FF] hover:bg-[#0066DD] text-white rounded-full" onClick={() => { window.location.hash = 'register'; setMobileMenuOpen(false); }}>
-                  Demander un service
-                </Button>
+                {!auth.user ? (
+                  <>
+                    <Button variant="outline" onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}>Connexion</Button>
+                    <Button className="bg-[#0077FF] hover:bg-[#0066DD] text-white rounded-full" onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}>
+                      S'inscrire
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}>
+                      {auth.user.role === 'provider' ? 'Mon espace' : 'Tableau de bord'}
+                    </Button>
+                    <Button className="bg-red-50 text-red-600" onClick={async () => { await auth.logout(); setMobileMenuOpen(false); navigate('/'); }}>
+                      Déconnexion
+                    </Button>
+                  </>
+                )}
               </div>
             </nav>
           </div>

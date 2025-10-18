@@ -41,6 +41,12 @@ import { ReviewsModule } from './reviews/reviews.module';
   entities: [User, Vehicle, Service, ServicePricing, Order, OrderTracking, Payment, Review, RatingsSummary, Notification, Conversation, Message, Attachment],
       synchronize: false, // IMPORTANT: Ne pas utiliser en production
       logging: process.env.NODE_ENV === 'development',
+      // Extra MySQL driver options to make connections more resilient
+      // `extra` is passed to mysql2 pool options (connectionLimit, connectTimeout, etc.)
+      extra: {
+        connectionLimit: parseInt(process.env.DB_CONN_LIMIT || '10', 10),
+        connectTimeout: parseInt(process.env.DB_CONNECT_TIMEOUT_MS || '60000', 10),
+      },
     }),
 
     // Modules de l'application
