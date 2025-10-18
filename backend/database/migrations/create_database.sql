@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : sam. 18 oct. 2025 à 13:34
+-- Généré le : sam. 18 oct. 2025 à 17:09
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -50,9 +50,29 @@ CREATE TABLE `orders` (
   `vehicle_id` int(11) DEFAULT NULL,
   `status` enum('pending','accepted','in_progress','completed','cancelled') NOT NULL DEFAULT 'pending',
   `price` decimal(10,2) NOT NULL,
-  `location` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `region` varchar(100) NOT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `start_time` datetime DEFAULT NULL,
+  `end_time` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `order_tracking`
+--
+
+CREATE TABLE `order_tracking` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `latitude` decimal(10,8) NOT NULL,
+  `longitude` decimal(11,8) NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -74,6 +94,20 @@ CREATE TABLE `payments` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `ratings_summary`
+--
+
+CREATE TABLE `ratings_summary` (
+  `id` int(11) NOT NULL,
+  `worker_id` int(11) DEFAULT NULL,
+  `total_reviews` int(11) NOT NULL DEFAULT 0,
+  `avg_rating` decimal(3,2) NOT NULL DEFAULT 0.00,
+  `last_update` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `reviews`
 --
 
@@ -82,9 +116,15 @@ CREATE TABLE `reviews` (
   `order_id` int(11) NOT NULL,
   `client_id` int(11) NOT NULL,
   `worker_id` int(11) NOT NULL,
-  `rating` int(11) NOT NULL CHECK (`rating` >= 1 and `rating` <= 5),
-  `comment` text NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+  `service_id` int(11) DEFAULT NULL,
+  `vehicle_id` int(11) DEFAULT NULL,
+  `rating` tinyint(4) NOT NULL,
+  `comment` text DEFAULT NULL,
+  `sentiment` enum('positive','neutral','negative') DEFAULT NULL,
+  `visibility` tinyint(1) NOT NULL DEFAULT 1,
+  `reported` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -98,7 +138,7 @@ CREATE TABLE `services` (
   `name` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `base_price` decimal(10,2) NOT NULL,
-  `duration_estimate` varchar(50) NOT NULL,
+  `duration_estimate` varchar(50) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `category` enum('wash','oil_change','repair','towing','battery','other') NOT NULL DEFAULT 'other',
   `unit` enum('vehicle','hour','distance') NOT NULL DEFAULT 'vehicle',
@@ -147,6 +187,14 @@ CREATE TABLE `users` (
   `is_available` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Déchargement des données de la table `users`
+--
+
+INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `password_hash`, `role`, `is_verified`, `created_at`, `updated_at`, `avatar_url`, `address`, `city`, `latitude`, `longitude`, `status`, `is_available`) VALUES
+(1, 'Youssef El Amrani', 'youssef@example.com', '+212612345678', '$2b$12$hTeieCxcD3ApnwSiFAdjA.vyYD76rv1jWAQvA1yrJcNuVTayM0f6.', 'worker', 1, '2025-10-18 16:05:03', '2025-10-18 16:05:10', NULL, NULL, NULL, NULL, NULL, 'active', 0);
+
+-- --------------------------------------------------------
 
 --
 -- Structure de la table `vehicles`
@@ -168,7 +216,6 @@ CREATE TABLE `vehicles` (
   `documents_url` varchar(255) DEFAULT NULL,
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 --
 -- Index pour les tables déchargées
@@ -193,7 +240,17 @@ ALTER TABLE `orders`
   ADD KEY `idx_client_id` (`client_id`),
   ADD KEY `idx_worker_id` (`worker_id`),
   ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_created_at` (`created_at`);
+  ADD KEY `idx_created_at` (`created_at`),
+  ADD KEY `idx_region` (`region`),
+  ADD KEY `idx_client_created` (`client_id`,`created_at`);
+
+--
+-- Index pour la table `order_tracking`
+--
+ALTER TABLE `order_tracking`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_order_tracking_order_id` (`order_id`),
+  ADD KEY `idx_order_tracking_timestamp` (`timestamp`);
 
 --
 -- Index pour la table `payments`
@@ -205,15 +262,21 @@ ALTER TABLE `payments`
   ADD KEY `idx_transaction_id` (`transaction_id`);
 
 --
+-- Index pour la table `ratings_summary`
+--
+ALTER TABLE `ratings_summary`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_ratings_worker` (`worker_id`);
+
+--
 -- Index pour la table `reviews`
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `order_id` (`order_id`),
+  ADD UNIQUE KEY `order_id_unique` (`order_id`),
   ADD KEY `client_id` (`client_id`),
-  ADD KEY `idx_worker_id` (`worker_id`),
-  ADD KEY `idx_rating` (`rating`),
-  ADD KEY `idx_created_at` (`created_at`);
+  ADD KEY `worker_id` (`worker_id`),
+  ADD KEY `idx_rating` (`rating`);
 
 --
 -- Index pour la table `services`
@@ -221,8 +284,7 @@ ALTER TABLE `reviews`
 ALTER TABLE `services`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_is_active` (`is_active`),
-  ADD KEY `idx_services_category` (`category`),
-  ADD KEY `idx_services_is_active` (`is_active`);
+  ADD KEY `idx_services_category` (`category`);
 
 --
 -- Index pour la table `service_pricing`
@@ -251,10 +313,7 @@ ALTER TABLE `vehicles`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uniq_vehicle_license_plate` (`license_plate`),
   ADD KEY `idx_user_id` (`user_id`),
-  ADD KEY `idx_is_available` (`is_available`),
-  ADD KEY `idx_vehicle_user_id` (`user_id`),
-  ADD KEY `idx_vehicle_is_available` (`is_available`),
-  ADD KEY `idx_vehicle_status` (`status`);
+  ADD KEY `idx_is_available` (`is_available`);
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
@@ -273,9 +332,21 @@ ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT pour la table `order_tracking`
+--
+ALTER TABLE `order_tracking`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT pour la table `payments`
 --
 ALTER TABLE `payments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `ratings_summary`
+--
+ALTER TABLE `ratings_summary`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -300,13 +371,13 @@ ALTER TABLE `service_pricing`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `vehicles`
 --
 ALTER TABLE `vehicles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Contraintes pour les tables déchargées
@@ -328,10 +399,22 @@ ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_4` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE SET NULL;
 
 --
+-- Contraintes pour la table `order_tracking`
+--
+ALTER TABLE `order_tracking`
+  ADD CONSTRAINT `fk_order_tracking_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
+
+--
 -- Contraintes pour la table `payments`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `ratings_summary`
+--
+ALTER TABLE `ratings_summary`
+  ADD CONSTRAINT `fk_ratings_summary_worker` FOREIGN KEY (`worker_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `reviews`

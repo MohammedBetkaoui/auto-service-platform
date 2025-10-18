@@ -9,12 +9,15 @@ import { Order } from './entities/order.entity';
 import { OrderTracking } from './entities/order_tracking.entity';
 import { Payment } from './entities/payment.entity';
 import { Review } from './entities/review.entity';
+import { RatingsSummary } from './entities/ratings_summary.entity';
 import { Notification } from './entities/notification.entity';
+import { NotificationsModule } from './notifications/notifications.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { ServicesModule } from './services/services.module';
 import { OrdersModule } from './orders/orders.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -31,7 +34,7 @@ import { OrdersModule } from './orders/orders.module';
       username: process.env.DB_USER || 'root',
       password: process.env.DB_PASS || '',
       database: process.env.DB_NAME || 'auto_service_platform',
-  entities: [User, Vehicle, Service, ServicePricing, Order, OrderTracking, Payment, Review, Notification],
+  entities: [User, Vehicle, Service, ServicePricing, Order, OrderTracking, Payment, Review, RatingsSummary, Notification],
       synchronize: false, // IMPORTANT: Ne pas utiliser en production
       logging: process.env.NODE_ENV === 'development',
     }),
@@ -43,6 +46,10 @@ import { OrdersModule } from './orders/orders.module';
     ServicesModule,
     // Orders module
     OrdersModule,
+    // Reviews module
+    ReviewsModule,
+    // Notifications module
+    NotificationsModule,
   ],
   controllers: [],
   providers: [],

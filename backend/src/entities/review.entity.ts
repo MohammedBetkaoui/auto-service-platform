@@ -3,6 +3,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
   OneToOne,
@@ -30,8 +31,24 @@ export class Review {
   @Column({ type: 'text' })
   comment: string;
 
+  @Column({
+    type: 'enum',
+    enum: ['positive', 'neutral', 'negative'],
+    nullable: true,
+  })
+  sentiment?: 'positive' | 'neutral' | 'negative';
+
+  @Column({ type: 'boolean', default: true })
+  visibility: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  reported: boolean;
+
   @CreateDateColumn()
   created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 
   // Relations
   @OneToOne(() => Order, (order) => order.review, { onDelete: 'CASCADE' })
