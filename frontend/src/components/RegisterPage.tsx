@@ -8,7 +8,6 @@ import { Step4Confirmation } from './register/Step4Confirmation';
 import { SuccessMessage } from './register/SuccessMessage';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
-import { useAuth } from '../context/AuthContext';
 
 type UserType = 'client' | 'provider' | null;
 
@@ -35,9 +34,6 @@ export function RegisterPage() {
   const [userType, setUserType] = useState<UserType>(null);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [isComplete, setIsComplete] = useState(false);
-  const auth = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
 
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
@@ -65,36 +61,10 @@ export function RegisterPage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleConfirm = async () => {
-    setSubmitError('');
-
-    // Basic client-side validation
-    if (!formData.fullName || !formData.email || !formData.password) {
-      setSubmitError('Veuillez remplir tous les champs requis.');
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setSubmitError('Les mots de passe ne correspondent pas.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await auth.register({
-        full_name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password,
-        role: userType === 'provider' ? 'provider' : 'client',
-      });
-      setIsComplete(true);
-    } catch (err: any) {
-      console.error('Registration error', err);
-      setSubmitError(err?.message || 'Erreur lors de l\'inscription');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleConfirm = () => {
+    // Here you would typically send the data to your backend
+    console.log('Form submitted:', { userType, ...formData });
+    setIsComplete(true);
   };
 
   const handleBackToHome = () => {
@@ -150,7 +120,7 @@ export function RegisterPage() {
             </div>
             <p className="text-sm text-gray-600 hidden sm:block">
               Déjà inscrit ?{' '}
-              <a href="/login" className="text-[#0077FF] hover:underline">
+              <a href="#login" className="text-[#0077FF] hover:underline">
                 Se connecter
               </a>
             </p>

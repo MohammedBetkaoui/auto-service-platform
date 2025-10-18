@@ -6,11 +6,8 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Checkbox } from './ui/checkbox';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
-import { useNavigate } from 'react-router-dom';
 
 type UserRole = 'client' | 'provider' | 'admin';
-
-import { useAuth } from '../context/AuthContext';
 
 export function LoginPage() {
   const [selectedRole, setSelectedRole] = useState<UserRole>('client');
@@ -18,8 +15,6 @@ export function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const auth = useAuth();
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     emailOrPhone: '',
@@ -35,22 +30,26 @@ export function LoginPage() {
     e.preventDefault();
     setError('');
 
+    // Validation
     if (!formData.emailOrPhone || !formData.password) {
       setError('Veuillez remplir tous les champs');
       return;
     }
 
     setIsLoading(true);
-    try {
-      // login now expects { email, password }
-      await auth.login({ email: formData.emailOrPhone, password: formData.password });
-      // On success, navigate to dashboard (react-router)
-      navigate('/dashboard');
-    } catch (err: any) {
-      setError(err?.message || 'Erreur lors de la connexion');
-    } finally {
+
+    // Simulate API call
+    setTimeout(() => {
       setIsLoading(false);
-    }
+      
+      // For demo: accept any email/password and redirect to dashboard
+      // In production, validate credentials with backend
+      if (formData.emailOrPhone && formData.password) {
+        window.location.hash = 'dashboard';
+      } else {
+        setError('Email ou mot de passe incorrect');
+      }
+    }, 1500);
   };
 
   const handleGoogleLogin = () => {
@@ -59,7 +58,7 @@ export function LoginPage() {
   };
 
   const handleBackToHome = () => {
-    navigate('/');
+    window.location.hash = '';
   };
 
   const getRoleLabel = (role: UserRole) => {
@@ -122,10 +121,7 @@ export function LoginPage() {
             {/* Role Selector */}
             <div className="mb-6">
               <Label className="mb-3 block text-center">Type de compte</Label>
-              <Tabs
-                value={selectedRole}
-                onValueChange={(value: string) => setSelectedRole(value as UserRole)}
-              >
+              <Tabs value={selectedRole} onValueChange={(value: string) => setSelectedRole(value as UserRole)}>
                 <TabsList className="grid w-full grid-cols-3 bg-[#F5F7FA]">
                   <TabsTrigger value="client" className="data-[state=active]:bg-[#0077FF] data-[state=active]:text-white">
                     Client
@@ -208,9 +204,7 @@ export function LoginPage() {
                 <Checkbox
                   id="rememberMe"
                   checked={rememberMe}
-                  onCheckedChange={(checked: boolean | 'indeterminate' | undefined) =>
-                    setRememberMe(checked === true)
-                  }
+                  onCheckedChange={(checked: boolean | "indeterminate" | undefined) => setRememberMe(Boolean(checked))}
                 />
                 <Label htmlFor="rememberMe" className="cursor-pointer text-sm">
                   Se souvenir de moi
@@ -279,9 +273,12 @@ export function LoginPage() {
             <div className="mt-6 text-center">
               <p className="text-gray-600 text-sm">
                 Pas encore de compte ?{' '}
-                <span onClick={() => navigate('/register')} className="text-[#0077FF] hover:underline cursor-pointer">
+                <a
+                  href="#register"
+                  className="text-[#0077FF] hover:underline"
+                >
                   Créer un compte maintenant
-                </span>
+                </a>
               </p>
             </div>
           </div>
