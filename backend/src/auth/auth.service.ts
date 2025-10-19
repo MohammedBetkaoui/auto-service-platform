@@ -192,10 +192,8 @@ export class AuthService {
       };
     }
 
-    // Générer un token de réinitialisation
-    const resetToken = await this.generateResetPasswordToken(user.id, user.email);
-
-    // TODO: Envoyer un email avec le lien de réinitialisation
+    // TODO: Générer un token de réinitialisation et envoyer un email avec le lien de réinitialisation
+    // const resetToken = await this.generateResetPasswordToken(user.id, user.email);
     // await this.emailService.sendResetPasswordEmail(user.email, resetToken);
 
     return {
