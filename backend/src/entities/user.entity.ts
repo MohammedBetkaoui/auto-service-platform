@@ -13,7 +13,7 @@ import { Notification } from './notification.entity';
 
 export enum UserRole {
   CLIENT = 'client',
-  WORKER = 'worker',
+  WORKER = 'provider',
   ADMIN = 'admin',
 }
 

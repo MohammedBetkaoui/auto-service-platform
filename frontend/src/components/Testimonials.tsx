@@ -44,17 +44,21 @@ export function Testimonials() {
   }, [isAutoPlaying]);
 
   return (
-    <section className="py-16 md:py-24 bg-[#F5F7FA]">
+    <section className="py-16 md:py-24 bg-gradient-to-br from-[#1A1A1A] to-[#0F0F0F] relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0077FF]/5 via-transparent to-[#28C76F]/5"></div>
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-[#0077FF]/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#28C76F]/10 rounded-full blur-3xl"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <div className="inline-block bg-[#0077FF]/10 text-[#0077FF] rounded-full px-4 py-2 mb-4">
+        <div className="text-center mb-12 md:mb-16 relative z-10">
+          <div className="inline-block bg-gradient-to-r from-[#0077FF]/20 to-[#28C76F]/20 backdrop-blur-md text-white rounded-full px-4 py-2 mb-4 border border-white/10">
             Témoignages
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl text-[#1E1E1E] mb-4">
-            Ce que disent nos clients
+          <h2 className="text-white text-3xl md:text-4xl lg:text-5xl mb-4 font-bold">
+            Ce que disent nos <span className="bg-gradient-to-r from-[#0077FF] to-[#28C76F] bg-clip-text text-transparent">clients</span>
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-white/80 text-lg max-w-2xl mx-auto">
             Des milliers de clients satisfaits à travers toute l'Algérie
           </p>
         </div>
@@ -79,8 +83,8 @@ export function Testimonials() {
                   setCurrentIndex(index);
                   setIsAutoPlaying(false);
                 }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex ? 'bg-[#0077FF] w-8' : 'bg-gray-300'
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentIndex ? 'bg-[#28C76F] w-8 shadow-lg shadow-[#28C76F]/50' : 'bg-white/30 hover:bg-white/50'
                 }`}
               />
             ))}
@@ -93,30 +97,30 @@ export function Testimonials() {
 
 function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] }) {
   return (
-    <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-lg transition-shadow relative">
-      <Quote className="absolute top-6 right-6 text-[#0077FF]/10" size={48} />
+    <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl p-6 md:p-8 shadow-2xl hover:shadow-[#0077FF]/20 transition-all duration-300 relative border border-white/10 hover:border-white/20">
+      <Quote className="absolute top-6 right-6 text-[#0077FF]/20" size={48} />
       
       <div className="flex items-center gap-4 mb-4">
-        <Avatar className="w-14 h-14 border-2 border-[#0077FF]/20">
+        <Avatar className="w-14 h-14 border-2 border-[#0077FF]/30">
           <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
-          <AvatarFallback className="bg-[#0077FF] text-white">
+          <AvatarFallback className="bg-gradient-to-br from-[#0077FF] to-[#28C76F] text-white">
             {testimonial.initials}
           </AvatarFallback>
         </Avatar>
         
         <div>
-          <h4 className="text-[#1E1E1E]">{testimonial.name}</h4>
-          <p className="text-gray-500 text-sm">{testimonial.location}</p>
+          <h4 className="text-white font-semibold">{testimonial.name}</h4>
+          <p className="text-white/60 text-sm">{testimonial.location}</p>
         </div>
       </div>
 
       <div className="flex gap-1 mb-4">
         {[...Array(testimonial.rating)].map((_, i) => (
-          <Star key={i} size={16} className="fill-[#FFA500] text-[#FFA500]" />
+          <Star key={i} size={16} className="fill-[#28C76F] text-[#28C76F]" />
         ))}
       </div>
 
-      <p className="text-gray-600 leading-relaxed">
+      <p className="text-white/80 leading-relaxed">
         "{testimonial.comment}"
       </p>
     </div>

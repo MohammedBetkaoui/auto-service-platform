@@ -2,15 +2,15 @@ import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react
 
 export function Footer() {
   return (
-    <footer className="bg-[#1E1E1E] text-white pt-16 pb-8">
+    <footer className="bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] text-white pt-16 pb-8 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* About */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-[#0077FF] rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">A</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-[#0077FF] to-[#0055CC] rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white text-xl font-bold">A</span>
               </div>
               <span className="text-xl text-white tracking-tight">
                 AutoServe <span className="text-[#0077FF]">DZ</span>
@@ -23,19 +23,19 @@ export function Footer() {
             <div className="flex gap-3">
               <a 
                 href="#" 
-                className="w-10 h-10 bg-white/10 hover:bg-[#0077FF] rounded-lg flex items-center justify-center transition-colors"
+                className="w-10 h-10 bg-white/10 hover:bg-[#0077FF] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
               >
                 <Facebook size={20} />
               </a>
               <a 
                 href="#" 
-                className="w-10 h-10 bg-white/10 hover:bg-[#0077FF] rounded-lg flex items-center justify-center transition-colors"
+                className="w-10 h-10 bg-white/10 hover:bg-[#0077FF] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
               >
                 <Instagram size={20} />
               </a>
               <a 
                 href="#" 
-                className="w-10 h-10 bg-white/10 hover:bg-[#0077FF] rounded-lg flex items-center justify-center transition-colors"
+                className="w-10 h-10 bg-white/10 hover:bg-[#0077FF] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
               >
                 <Linkedin size={20} />
               </a>
@@ -130,10 +130,10 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm text-center md:text-left">
+            <p className="text-white/60 text-sm text-center md:text-left">
               © 2025 AutoServe DZ. Tous droits réservés.
             </p>
-            <p className="text-gray-400 text-sm text-center md:text-right">
+            <p className="text-white/60 text-sm text-center md:text-right">
               Fait avec ❤️ en Algérie
             </p>
           </div>
