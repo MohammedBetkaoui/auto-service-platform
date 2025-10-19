@@ -69,7 +69,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch('users/update-password')
   async updatePassword(@Request() req, @Body() dto: UpdatePasswordDto) {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const user = await this.usersService.findByEmailWithPassword(req.user.email);
     if (!user) throw new BadRequestException('Utilisateur introuvable');
 
