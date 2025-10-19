@@ -51,10 +51,8 @@ export class AuthService {
       is_verified: true, // Par défaut, le compte est vérifié
     });
 
-    // Générer un token de vérification
-    const verificationToken = await this.generateVerificationToken(user.id, user.email);
-
-    // TODO: Envoyer un email de vérification
+    // TODO: Générer un token de vérification et envoyer un email de vérification
+    // const verificationToken = await this.generateVerificationToken(user.id, user.email);
     // await this.emailService.sendVerificationEmail(user.email, verificationToken);
 
     return {
