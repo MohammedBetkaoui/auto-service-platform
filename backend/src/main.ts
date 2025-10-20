@@ -11,10 +11,21 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
+  // Sécurité CORS renforcée (OWASP)
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: [process.env.FRONTEND_URL || 'http://localhost:5173'], // Liste blanche stricte
     credentials: true,
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization',
+      'X-CSRF-Token',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    exposedHeaders: ['Authorization'],
+    maxAge: 86400,
   });
 
   // Security middleware
@@ -31,6 +42,10 @@ async function bootstrap() {
   app.use(hpp());
   app.use(compression());
   app.use(cookieParser());
+
+  // Journalisation des tentatives de connexion
+  const { LoginLoggerMiddleware } = require('./auth/middlewares/login-logger.middleware');
+  app.use(new LoginLoggerMiddleware().use);
 
   // Body size limits
   app.use((req, res, next) => {

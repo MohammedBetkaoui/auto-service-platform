@@ -33,9 +33,21 @@ export function LoginPage() {
     e.preventDefault();
     setError('');
 
-    // Validation
+    // Validation stricte email/téléphone
+    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const phoneRegex = /^0[5-7][0-9]{8}$/;
     if (!formData.emailOrPhone || !formData.password) {
       setError('Veuillez remplir tous les champs');
+      return;
+    }
+    if (!emailRegex.test(formData.emailOrPhone) && !phoneRegex.test(formData.emailOrPhone)) {
+      setError('Format email ou numéro de téléphone invalide');
+      return;
+    }
+    // Mot de passe fort : min 8 caractères, 1 majuscule, 1 chiffre
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError('Mot de passe trop faible (min 8 caractères, 1 majuscule, 1 chiffre)');
       return;
     }
 
@@ -46,6 +58,7 @@ export function LoginPage() {
       // Redirection is handled in AuthContext
     } catch (err) {
       setError('Email ou mot de passe incorrect');
+      setTimeout(() => setError(''), 4000); // Efface l'erreur après 4s
     } finally {
       setIsLoading(false);
     }
@@ -164,7 +177,7 @@ export function LoginPage() {
                     className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3"
                   >
                     <AlertCircle size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-red-300">{error}</p>
+                    <p className="text-sm text-red-300">{error.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
                   </motion.div>
                 )}
 

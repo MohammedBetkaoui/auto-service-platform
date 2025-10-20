@@ -24,8 +24,9 @@ export class User {
 
   @Column({ type: 'varchar', length: 100 })
   full_name: string;
-
-  @Column({ type: 'varchar', length: 120, unique: true })
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    refresh_token?: string;
+  @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
   @Column({ type: 'varchar', length: 20 })

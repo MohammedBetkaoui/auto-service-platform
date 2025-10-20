@@ -51,8 +51,8 @@ export const authApi = {
     return response.data;
   },
 
-  refresh: async (data: RefreshData): Promise<AuthResponse> => {
-    const response = await axiosInstance.post('/auth/refresh', data);
+  refresh: async (): Promise<AuthResponse> => {
+    const response = await axiosInstance.post('/auth/refresh');
     return response.data;
   },
 

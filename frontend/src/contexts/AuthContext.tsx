@@ -36,6 +36,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initAuth = async () => {
       const storedUser = localStorage.getItem('autoserve_user');
       const accessToken = localStorage.getItem('access_token');
-      const refreshToken = localStorage.getItem('refresh_token');
 
       if (storedUser && accessToken) {
         setUser(JSON.parse(storedUser));
@@ -53,31 +60,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (refreshToken) {
-        try {
-          const resp = await authApi.refresh({ refresh_token: refreshToken });
-          localStorage.setItem('access_token', resp.access_token);
-          localStorage.setItem('refresh_token', resp.refresh_token);
+      // Tenter de rafraîchir le token via le cookie HTTP-only
+      try {
+        const resp = await authApi.refresh();
+        localStorage.setItem('access_token', resp.access_token);
 
-          const userData: User = {
-            id: resp.user.id.toString(),
-            email: resp.user.email,
-            name: resp.user.full_name,
-            role: resp.user.role as UserRole,
-            avatar: resp.user.avatar_url,
-            phone: resp.user.phone,
-            status: resp.user.status as 'active' | 'inactive' | 'banned',
-          };
+        const userData: User = {
+          id: resp.user.id.toString(),
+          email: resp.user.email,
+          name: resp.user.full_name,
+          role: resp.user.role as UserRole,
+          avatar: resp.user.avatar_url,
+          phone: resp.user.phone,
+          status: resp.user.status as 'active' | 'inactive' | 'banned',
+        };
 
-          setUser(userData);
-          localStorage.setItem('autoserve_user', JSON.stringify(userData));
-        } catch (e) {
-          // refresh failed, clear storage
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('autoserve_user');
-          setUser(null);
-        }
+        setUser(userData);
+        localStorage.setItem('autoserve_user', JSON.stringify(userData));
+      } catch (e) {
+        // refresh failed, clear storage
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('autoserve_user');
+        setUser(null);
       }
 
       setIsLoading(false);
@@ -180,29 +184,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        register,
-        logout,
-        forgotPassword,
-        resetPassword,
-        verifyEmail,
-        updateUser,
-        isAuthenticated: !!user,
-        isLoading,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={{
+      user,
+      login,
+      register,
+      logout,
+      forgotPassword,
+      resetPassword,
+      verifyEmail,
+      updateUser,
+      isAuthenticated: !!user,
+      isLoading,
+    }}>
+      {isLoading ? <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh'}}><span>Chargement...</span></div> : children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}

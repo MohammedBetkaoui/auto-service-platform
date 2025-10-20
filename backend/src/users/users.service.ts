@@ -118,8 +118,7 @@ export class UsersService {
     }
 
     await this.usersRepository.update(userId, {
-      // Vous pouvez ajouter un champ refresh_token dans l'entité User si nécessaire
-      // Pour l'instant, nous le gérons différemment
+      refresh_token: hashedToken,
     });
   }
 

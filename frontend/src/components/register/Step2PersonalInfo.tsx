@@ -23,13 +23,15 @@ export function Step2PersonalInfo({ formData, onChange, onNext, onBack }: Step2P
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Email : stricte
   const validateEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const regex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return regex.test(email);
   };
 
+  // Téléphone : format algérien
   const validatePhone = (phone: string) => {
-    const regex = /^[0-9]{10}$/;
+    const regex = /^0[5-7][0-9]{8}$/;
     return regex.test(phone.replace(/\s/g, ''));
   };
 
@@ -48,9 +50,11 @@ export function Step2PersonalInfo({ formData, onChange, onNext, onBack }: Step2P
     const newErrors: Record<string, string> = {};
 
     if (!formData.fullName.trim()) newErrors.fullName = 'Le nom complet est requis';
-    if (!validateEmail(formData.email)) newErrors.email = 'Email invalide';
-    if (!validatePhone(formData.phone)) newErrors.phone = 'Numéro de téléphone invalide (10 chiffres)';
-    if (formData.password.length < 6) newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+    if (!validateEmail(formData.email)) newErrors.email = 'Format email invalide';
+    if (!validatePhone(formData.phone)) newErrors.phone = 'Format numéro algérien requis (05/06/07...)';
+    // Mot de passe fort : min 8 caractères, 1 majuscule, 1 chiffre
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(formData.password)) newErrors.password = 'Mot de passe trop faible (min 8 caractères, 1 majuscule, 1 chiffre)';
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
 
@@ -58,6 +62,8 @@ export function Step2PersonalInfo({ formData, onChange, onNext, onBack }: Step2P
 
     if (Object.keys(newErrors).length === 0) {
       onNext();
+    } else {
+      setTimeout(() => setErrors({}), 4000); // Efface les erreurs après 4s
     }
   };
 
@@ -94,7 +100,7 @@ export function Step2PersonalInfo({ formData, onChange, onNext, onBack }: Step2P
                 className={`pl-11 rounded-xl bg-[#0a0a0a] border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-[#FF6B35] ${errors.fullName ? 'border-red-500' : ''}`}
               />
             </div>
-            {errors.fullName && <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>}
+            {errors.fullName && <p className="text-red-400 text-sm mt-1">{errors.fullName.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>}
           </div>
 
           {/* Email */}
@@ -111,7 +117,7 @@ export function Step2PersonalInfo({ formData, onChange, onNext, onBack }: Step2P
                 className={`pl-11 rounded-xl bg-[#0a0a0a] border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-[#FF6B35] ${errors.email ? 'border-red-500' : ''}`}
               />
             </div>
-            {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
+            {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>}
           </div>
 
           {/* Phone */}
@@ -128,7 +134,7 @@ export function Step2PersonalInfo({ formData, onChange, onNext, onBack }: Step2P
                 className={`pl-11 rounded-xl bg-[#0a0a0a] border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-[#FF6B35] ${errors.phone ? 'border-red-500' : ''}`}
               />
             </div>
-            {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
+            {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>}
           </div>
 
           {/* Password */}
@@ -166,7 +172,7 @@ export function Step2PersonalInfo({ formData, onChange, onNext, onBack }: Step2P
                 <p className="text-sm text-gray-400">Force : <span className="text-white">{passwordStrength.text}</span></p>
               </div>
             )}
-            {errors.password && <p className="text-red-400 text-sm mt-1">{errors.password}</p>}
+            {errors.password && <p className="text-red-400 text-sm mt-1">{errors.password.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>}
           </div>
 
           {/* Confirm Password */}
@@ -189,7 +195,7 @@ export function Step2PersonalInfo({ formData, onChange, onNext, onBack }: Step2P
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-            {errors.confirmPassword && <p className="text-red-400 text-sm mt-1">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && <p className="text-red-400 text-sm mt-1">{errors.confirmPassword.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>}
           </div>
 
           <Separator className="my-6 bg-white/10" />

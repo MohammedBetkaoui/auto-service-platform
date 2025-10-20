@@ -33,7 +33,7 @@ export class AuthService {
    * Inscription d'un nouvel utilisateur
    */
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
-    const { full_name, email, password, phone, role } = registerDto;
+  const { full_name, email, password, phone, role,city} = registerDto;
 
     // Vérifier si l'email existe déjà
     const existingUser = await this.usersService.findByEmail(email);
@@ -49,6 +49,7 @@ export class AuthService {
       phone,
       role,
       is_verified: true, // Par défaut, le compte est vérifié
+      city,
     });
 
     // Générer les tokens
@@ -125,13 +126,22 @@ export class AuthService {
    */
   async refreshTokens(refreshToken: string): Promise<AuthTokens> {
     try {
-      // Vérifier le refresh token
+      // Vérifier le refresh token (JWT signature)
       const payload = await this.jwtService.verifyAsync(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET') || this.configService.get<string>('JWT_SECRET'),
       });
 
       // Récupérer l'utilisateur
       const user = await this.usersService.findOne(payload.sub);
+      if (!user || !user.refresh_token) {
+        throw new UnauthorizedException('Refresh token invalide ou expiré');
+      }
+
+      // Vérifier le hash du refresh token
+      const isValid = await bcrypt.compare(refreshToken, user.refresh_token);
+      if (!isValid) {
+        throw new UnauthorizedException('Refresh token invalide ou expiré');
+      }
 
       // Générer de nouveaux tokens
       const tokens = await this.generateTokens(user.id, user.email, user.role);

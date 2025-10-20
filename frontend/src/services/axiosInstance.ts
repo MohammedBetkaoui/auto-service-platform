@@ -9,6 +9,7 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Permet d'envoyer les cookies HTTP-only
 });
 
 // Intercepteur pour ajouter le token JWT automatiquement
@@ -38,22 +39,16 @@ axiosInstance.interceptors.response.use(
 
       try {
         // Essayer de rafraîchir le token
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (refreshToken) {
-          const response = await axios.post(`${BASE_URL}/auth/refresh`, {
-            refresh_token: refreshToken,
-          });
+        // Le refresh token est envoyé automatiquement via le cookie HTTP-only
+        const response = await axios.post(`${BASE_URL}/auth/refresh`, {}, { withCredentials: true });
+        const { access_token } = response.data;
 
-          const { access_token, refresh_token: newRefreshToken } = response.data;
+        // Stocker le nouvel access token
+        localStorage.setItem('access_token', access_token);
 
-          // Stocker les nouveaux tokens
-          localStorage.setItem('access_token', access_token);
-          localStorage.setItem('refresh_token', newRefreshToken);
-
-          // Réessayer la requête originale avec le nouveau token
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
-          return axiosInstance(originalRequest);
-        }
+        // Réessayer la requête originale avec le nouveau token
+        originalRequest.headers.Authorization = `Bearer ${access_token}`;
+        return axiosInstance(originalRequest);
       } catch (refreshError) {
         // Échec du refresh, déconnexion
         localStorage.removeItem('access_token');
