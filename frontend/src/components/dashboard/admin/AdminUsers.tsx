@@ -13,7 +13,7 @@ interface AdminUser {
   id: string;
   name: string;
   email: string;
-  role: 'client' | 'worker' | 'admin';
+  role: 'client' | 'provider' | 'admin';
   status: 'active' | 'inactive' | 'banned';
   avatar: string;
   joinedDate: string;
@@ -36,7 +36,7 @@ const mockUsers: AdminUser[] = [
     id: '2',
     name: 'Ahmed Benali',
     email: 'ahmed.benali@email.com',
-    role: 'worker',
+    role: 'provider',
     status: 'active',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ahmed',
     joinedDate: '2024-11-20',
@@ -47,7 +47,7 @@ const mockUsers: AdminUser[] = [
     id: '3',
     name: 'Karim Meziane',
     email: 'karim.meziane@email.com',
-    role: 'worker',
+    role: 'provider',
     status: 'inactive',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=karim',
     joinedDate: '2024-12-10',
@@ -76,7 +76,7 @@ export function AdminUsers() {
     switch (role) {
       case 'client':
         return { label: 'Client', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' };
-      case 'worker':
+      case 'provider':
         return { label: 'Prestataire', color: 'bg-purple-500/10 text-purple-500 border-purple-500/20' };
       case 'admin':
         return { label: 'Admin', color: 'bg-red-500/10 text-red-500 border-red-500/20' };
@@ -127,7 +127,7 @@ export function AdminUsers() {
         {[
           { label: 'Total', value: users.length.toString(), icon: Users, color: 'from-blue-500 to-blue-600' },
           { label: 'Clients', value: users.filter(u => u.role === 'client').length.toString(), icon: Users, color: 'from-green-500 to-green-600' },
-          { label: 'Prestataires', value: users.filter(u => u.role === 'worker').length.toString(), icon: Shield, color: 'from-purple-500 to-purple-600' },
+          { label: 'Prestataires', value: users.filter(u => u.role === 'provider').length.toString(), icon: Shield, color: 'from-purple-500 to-purple-600' },
           { label: 'Actifs', value: users.filter(u => u.status === 'active').length.toString(), icon: Check, color: 'from-[#FF6B35] to-[#F7931E]' },
         ].map((stat, index) => {
           const IconComponent = stat.icon;
@@ -166,7 +166,7 @@ export function AdminUsers() {
             <SelectContent>
               <SelectItem value="all">Tous les rôles</SelectItem>
               <SelectItem value="client">Clients</SelectItem>
-              <SelectItem value="worker">Prestataires</SelectItem>
+              <SelectItem value="provider">Prestataires</SelectItem>
               <SelectItem value="admin">Admins</SelectItem>
             </SelectContent>
           </Select>

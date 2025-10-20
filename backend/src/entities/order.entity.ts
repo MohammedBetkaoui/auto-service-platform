@@ -32,7 +32,7 @@ export class Order {
   client_id: number;
 
   @Column({ type: 'int', nullable: true })
-  worker_id: number;
+  provider_id: number;
 
   @Column({ type: 'int' })
   service_id: number;
@@ -82,9 +82,9 @@ export class Order {
   @JoinColumn({ name: 'client_id' })
   client: User;
 
-  @ManyToOne(() => User, (user) => user.workerOrders, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'worker_id' })
-  worker: User;
+  @ManyToOne(() => User, (user) => user.providerOrders, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'provider_id' })
+  provider: User;
 
   @ManyToOne(() => Service, (service) => service.orders, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'service_id' })

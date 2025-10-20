@@ -5,7 +5,7 @@ import { Order, OrderStatus } from '../entities/order.entity';
 import { OrderTracking } from '../entities/order_tracking.entity';
 import { Vehicle } from '../entities/vehicle.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { AssignWorkerDto } from './dto/assign-worker.dto';
+import { AssignproviderDto } from './dto/assign-provider.dto';
 import { UsersService } from '../users/users.service';
 import { ServicesService } from '../services/services.service';
 import { VehiclesService } from '../vehicles/vehicles.service';
@@ -24,7 +24,7 @@ export class OrdersService {
     private dataSource: DataSource,
   ) {}
 
-  // Create a new order: validate service, compute price, notify workers
+  // Create a new order: validate service, compute price, notify providers
   async create(clientId: number, dto: CreateOrderDto): Promise<Order> {
     const svc = await this.servicesService.getPrice(dto.service_id, dto.vehicle_type, dto.region);
     const price = Number(svc);
@@ -44,7 +44,7 @@ export class OrdersService {
 
     const saved = (await this.ordersRepo.save(order)) as unknown as Order;
 
-    // TODO: notify available workers in region via gateway (OrdersGateway)
+    // TODO: notify available providers in region via gateway (OrdersGateway)
 
     return saved;
   }
@@ -55,19 +55,19 @@ export class OrdersService {
     return o;
   }
 
-  async accept(workerId: number, orderId: number, dto: AssignWorkerDto) {
+  async accept(providerId: number, orderId: number, dto: AssignproviderDto) {
     const order = await this.findOne(orderId);
     if (order.status !== OrderStatus.PENDING) throw new ConflictException('Order not available for accept');
 
-    // validate vehicle belongs to worker and is available
+    // validate vehicle belongs to provider and is available
     const vehicle = await this.vehiclesService.findOne(dto.vehicle_id);
     if (!vehicle) throw new NotFoundException('Vehicle not found');
-    if (vehicle.user_id !== workerId) throw new ForbiddenException('Vehicle does not belong to worker');
+    if (vehicle.user_id !== providerId) throw new ForbiddenException('Vehicle does not belong to provider');
     if (!vehicle.is_available) throw new ConflictException('Vehicle not available');
 
-    // transaction: assign worker and mark vehicle unavailable
+    // transaction: assign provider and mark vehicle unavailable
     return await this.dataSource.transaction(async (manager) => {
-      order.worker_id = workerId;
+      order.provider_id = providerId;
       order.vehicle_id = dto.vehicle_id;
       order.status = OrderStatus.ACCEPTED;
       await manager.getRepository(Order).save(order as any);
@@ -79,9 +79,9 @@ export class OrdersService {
     });
   }
 
-  async start(workerId: number, orderId: number) {
+  async start(providerId: number, orderId: number) {
     const order = await this.findOne(orderId);
-    if (order.worker_id !== workerId) throw new ForbiddenException('Not assigned worker');
+    if (order.provider_id !== providerId) throw new ForbiddenException('Not assigned provider');
     if (order.status !== OrderStatus.ACCEPTED) throw new BadRequestException('Order not in accepted state');
 
     order.status = OrderStatus.IN_PROGRESS;
@@ -93,9 +93,9 @@ export class OrdersService {
     return saved;
   }
 
-  async complete(workerId: number, orderId: number) {
+  async complete(providerId: number, orderId: number) {
     const order = await this.findOne(orderId);
-    if (order.worker_id !== workerId) throw new ForbiddenException('Not assigned worker');
+    if (order.provider_id !== providerId) throw new ForbiddenException('Not assigned provider');
     if (order.status !== OrderStatus.IN_PROGRESS) throw new BadRequestException('Order not in progress');
 
     return await this.dataSource.transaction(async (manager) => {
@@ -121,15 +121,15 @@ export class OrdersService {
 
   async cancel(userId: number, orderId: number, role: string) {
     const order = await this.findOne(orderId);
-    // Rules: client before accept, worker before start, admin any time
+    // Rules: client before accept, provider before start, admin any time
     if (role === 'admin') {
       order.status = OrderStatus.CANCELLED;
     } else if (role === 'client') {
       if (order.client_id !== userId) throw new ForbiddenException('Not your order');
       if (order.status !== OrderStatus.PENDING) throw new BadRequestException('Cannot cancel after acceptance');
       order.status = OrderStatus.CANCELLED;
-    } else if (role === 'worker') {
-      if (order.worker_id !== userId) throw new ForbiddenException('Not assigned');
+    } else if (role === 'provider') {
+      if (order.provider_id !== userId) throw new ForbiddenException('Not assigned');
       if (order.status !== OrderStatus.ACCEPTED) throw new BadRequestException('Cannot cancel after start');
       order.status = OrderStatus.CANCELLED;
     } else {

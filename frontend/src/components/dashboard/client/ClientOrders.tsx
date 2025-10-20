@@ -7,7 +7,7 @@ import { Avatar } from '../../ui/avatar';
 interface Order {
   id: string;
   service: string;
-  worker: {
+  provider: {
     name: string;
     avatar: string;
     rating: number;
@@ -23,7 +23,7 @@ const mockOrders: Order[] = [
   {
     id: 'ORD-001',
     service: 'Lavage Premium',
-    worker: {
+    provider: {
       name: 'Ahmed Benali',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ahmed',
       rating: 4.9,
@@ -37,7 +37,7 @@ const mockOrders: Order[] = [
   {
     id: 'ORD-002',
     service: 'Entretien Complet',
-    worker: {
+    provider: {
       name: 'Karim Meziane',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=karim',
       rating: 4.7,
@@ -51,7 +51,7 @@ const mockOrders: Order[] = [
   {
     id: 'ORD-003',
     service: 'Assistance Routière',
-    worker: {
+    provider: {
       name: 'Yacine Hamdi',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=yacine',
       rating: 5.0,
@@ -157,16 +157,16 @@ export function ClientOrders() {
                     </div>
                   </div>
 
-                  {/* Worker Info */}
+                  {/* provider Info */}
                   <div className="flex items-center gap-3 mb-4">
                     <Avatar className="w-10 h-10 border-2 border-white/10">
-                      <img src={order.worker.avatar} alt={order.worker.name} />
+                      <img src={order.provider.avatar} alt={order.provider.name} />
                     </Avatar>
                     <div className="flex-1">
-                      <p className="text-white text-sm">{order.worker.name}</p>
+                      <p className="text-white text-sm">{order.provider.name}</p>
                       <div className="flex items-center gap-1">
                         <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                        <span className="text-gray-400 text-sm">{order.worker.rating}</span>
+                        <span className="text-gray-400 text-sm">{order.provider.rating}</span>
                       </div>
                     </div>
                   </div>

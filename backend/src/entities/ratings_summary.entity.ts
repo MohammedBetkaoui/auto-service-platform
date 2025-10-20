@@ -6,7 +6,7 @@ export class RatingsSummary {
   id: number;
 
   @Column({ type: 'int', nullable: true })
-  worker_id: number;
+  provider_id: number;
 
   @Column({ type: 'int', default: 0 })
   total_reviews: number;

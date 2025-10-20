@@ -24,10 +24,10 @@ export class ReviewsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Get('reviews/received')
   async received(@Request() req) {
-    return await this.reviewsService.findByWorker(req.user.id);
+    return await this.reviewsService.findByprovider(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)

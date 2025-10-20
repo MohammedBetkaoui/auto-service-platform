@@ -23,7 +23,7 @@ export class Review {
   client_id: number;
 
   @Column({ type: 'int' })
-  worker_id: number;
+  provider_id: number;
 
   @Column({ type: 'int' })
   rating: number;
@@ -59,7 +59,7 @@ export class Review {
   @JoinColumn({ name: 'client_id' })
   client: User;
 
-  @ManyToOne(() => User, (user) => user.workerReviews, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'worker_id' })
-  worker: User;
+  @ManyToOne(() => User, (user) => user.providerReviews, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'provider_id' })
+  provider: User;
 }

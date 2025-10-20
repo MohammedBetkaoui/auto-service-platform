@@ -28,8 +28,8 @@ export class ReviewsService {
     const r = this.reviewRepo.create({ ...dto, client_id: clientId } as any);
     const saved = await this.reviewRepo.save(r);
 
-    // Update summary for worker
-    await this.updateWorkerSummary(dto.worker_id);
+    // Update summary for provider
+    await this.updateproviderSummary(dto.provider_id);
 
     // Update service and vehicle aggregate ratings (optional)
     try {
@@ -45,20 +45,20 @@ export class ReviewsService {
     return saved;
   }
 
-  async updateWorkerSummary(workerId: number) {
+  async updateproviderSummary(providerId: number) {
     const { avg, count } = await this.reviewRepo
       .createQueryBuilder('r')
       .select('AVG(r.rating)', 'avg')
       .addSelect('COUNT(r.id)', 'count')
-      .where('r.worker_id = :workerId', { workerId })
+      .where('r.provider_id = :providerId', { providerId })
       .getRawOne();
 
     const avgNum = Number(avg || 0);
     const cnt = Number(count || 0);
 
-    let summary = (await this.summaryRepo.findOne({ where: { worker_id: workerId } as any })) as any;
+    let summary = (await this.summaryRepo.findOne({ where: { provider_id: providerId } as any })) as any;
     if (!summary) {
-      summary = this.summaryRepo.create({ worker_id: workerId, total_reviews: cnt, avg_rating: Number(avgNum.toFixed(2)) } as any);
+      summary = this.summaryRepo.create({ provider_id: providerId, total_reviews: cnt, avg_rating: Number(avgNum.toFixed(2)) } as any);
     } else {
       summary.total_reviews = cnt;
       summary.avg_rating = Number(avgNum.toFixed(2));
@@ -67,7 +67,7 @@ export class ReviewsService {
 
     // Optionally update users.rating column — if present
     try {
-      await this.usersService.update(workerId, { rating: summary.avg_rating } as any);
+      await this.usersService.update(providerId, { rating: summary.avg_rating } as any);
     } catch (e) {}
   }
 
@@ -101,8 +101,8 @@ export class ReviewsService {
     return await this.reviewRepo.find({ where: { client_id: clientId } as any });
   }
 
-  async findByWorker(workerId: number) {
-    return await this.reviewRepo.find({ where: { worker_id: workerId } as any });
+  async findByprovider(providerId: number) {
+    return await this.reviewRepo.find({ where: { provider_id: providerId } as any });
   }
 
   async report(reviewId: number, reporterId: number) {

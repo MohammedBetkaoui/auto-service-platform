@@ -64,7 +64,7 @@ Stocke tous les utilisateurs de la plateforme.
 | email | VARCHAR(120) | Email unique |
 | phone | VARCHAR(20) | Téléphone |
 | password_hash | VARCHAR(255) | Mot de passe haché |
-| role | ENUM | client / worker / admin |
+| role | ENUM | client / provider / admin |
 | is_verified | BOOLEAN | Email vérifié |
 | created_at | DATETIME | Date de création |
 | updated_at | DATETIME | Dernière modification |
@@ -102,7 +102,7 @@ Commandes de services.
 |---------|------|-------------|
 | id | INT (PK) | Identifiant unique |
 | client_id | INT (FK) | Client |
-| worker_id | INT (FK) | Prestataire |
+| provider_id | INT (FK) | Prestataire |
 | service_id | INT (FK) | Service demandé |
 | vehicle_id | INT (FK) | Véhicule utilisé |
 | status | ENUM | Statut de la commande |
@@ -137,7 +137,7 @@ Avis des clients.
 | id | INT (PK) | Identifiant unique |
 | order_id | INT (FK) | Commande évaluée |
 | client_id | INT (FK) | Client auteur |
-| worker_id | INT (FK) | Prestataire évalué |
+| provider_id | INT (FK) | Prestataire évalué |
 | rating | INT | Note (1-5) |
 | comment | TEXT | Commentaire |
 | created_at | DATETIME | Date de l'avis |
@@ -161,9 +161,9 @@ Notifications pour les utilisateurs.
 ```
 users (1) ──< (N) vehicles
 users (1) ──< (N) orders (client)
-users (1) ──< (N) orders (worker)
+users (1) ──< (N) orders (provider)
 users (1) ──< (N) reviews (client)
-users (1) ──< (N) reviews (worker)
+users (1) ──< (N) reviews (provider)
 users (1) ──< (N) notifications
 
 services (1) ──< (N) orders
@@ -213,11 +213,11 @@ backend/database/queries/useful_queries.sql
 
 **1. Lister toutes les commandes avec détails**
 ```sql
-SELECT o.id, c.full_name AS client, w.full_name AS worker, 
+SELECT o.id, c.full_name AS client, w.full_name AS provider, 
        s.name AS service, o.status, o.price
 FROM orders o
 JOIN users c ON o.client_id = c.id
-LEFT JOIN users w ON o.worker_id = w.id
+LEFT JOIN users w ON o.provider_id = w.id
 JOIN services s ON o.service_id = s.id;
 ```
 
@@ -227,9 +227,9 @@ SELECT u.full_name,
        COUNT(o.id) AS total_orders,
        AVG(r.rating) AS avg_rating
 FROM users u
-LEFT JOIN orders o ON u.id = o.worker_id
-LEFT JOIN reviews r ON u.id = r.worker_id
-WHERE u.role = 'worker'
+LEFT JOIN orders o ON u.id = o.provider_id
+LEFT JOIN reviews r ON u.id = r.provider_id
+WHERE u.role = 'provider'
 GROUP BY u.id;
 ```
 
@@ -293,7 +293,7 @@ INDEX idx_role (role)
 
 -- Sur orders
 INDEX idx_client_id (client_id)
-INDEX idx_worker_id (worker_id)
+INDEX idx_provider_id (provider_id)
 INDEX idx_status (status)
 INDEX idx_created_at (created_at)
 

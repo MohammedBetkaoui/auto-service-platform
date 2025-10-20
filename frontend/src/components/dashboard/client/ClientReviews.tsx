@@ -9,7 +9,7 @@ interface Review {
   id: string;
   orderId: string;
   service: string;
-  worker: {
+  provider: {
     name: string;
     avatar: string;
   };
@@ -24,7 +24,7 @@ const mockReviews: Review[] = [
     id: 'REV-001',
     orderId: 'ORD-001',
     service: 'Lavage Premium',
-    worker: {
+    provider: {
       name: 'Ahmed Benali',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ahmed',
     },
@@ -95,12 +95,12 @@ export function ClientReviews() {
           <Card key={review.id} className="bg-[#0F0F0F] border-white/10 p-6">
             <div className="flex items-start gap-4 mb-4">
               <Avatar className="w-12 h-12 border-2 border-white/10">
-                <img src={review.worker.avatar} alt={review.worker.name} />
+                <img src={review.provider.avatar} alt={review.provider.name} />
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-white">{review.worker.name}</p>
+                    <p className="text-white">{review.provider.name}</p>
                     <p className="text-gray-400 text-sm">{review.service}</p>
                   </div>
                   <div className="flex items-center gap-1">

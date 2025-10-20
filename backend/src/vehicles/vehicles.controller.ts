@@ -25,7 +25,7 @@ export class VehiclesController {
   constructor(private vehiclesService: VehiclesService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Post('vehicles')
   async create(@Request() req, @Body() dto: CreateVehicleDto) {
     const userId = req.user.id;
@@ -34,7 +34,7 @@ export class VehiclesController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Get('vehicles/my')
   async myVehicles(@Request() req) {
     const userId = req.user.id;
@@ -49,7 +49,7 @@ export class VehiclesController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Patch('vehicles/:id')
   async update(@Request() req, @Param('id', ParseIntPipe) id: number, @Body() dto: UpdateVehicleDto) {
     const userId = req.user.id;
@@ -58,7 +58,7 @@ export class VehiclesController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Patch('vehicles/:id/status')
   async updateStatus(@Request() req, @Param('id', ParseIntPipe) id: number, @Body() dto: UpdateVehicleStatusDto) {
     const userId = req.user.id;
@@ -67,7 +67,7 @@ export class VehiclesController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Delete('vehicles/:id')
   async remove(@Request() req, @Param('id', ParseIntPipe) id: number) {
     const userId = req.user.id;

@@ -87,14 +87,14 @@ export class UsersService {
   }
 
   /**
-   * Return a public profile for a worker
+   * Return a public profile for a provider
    */
-  async getWorkerPublicProfile(id: number) {
+  async getproviderPublicProfile(id: number) {
     const user = await this.usersRepository.findOne({ where: { id } });
-    if (!user) throw new NotFoundException(`Worker with id ${id} not found`);
+    if (!user) throw new NotFoundException(`provider with id ${id} not found`);
 
     // compute average rating from reviews if available
-  const reviewsRaw = await this.usersRepository.manager.find('review', { where: { worker: id } } as any).catch(() => []);
+  const reviewsRaw = await this.usersRepository.manager.find('review', { where: { provider: id } } as any).catch(() => []);
   const reviews = (reviewsRaw as any[]) || [];
   const avg = reviews.length ? reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length : null;
 

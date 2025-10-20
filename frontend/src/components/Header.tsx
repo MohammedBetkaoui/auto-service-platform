@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Logo } from './Logo';
 import { motion, AnimatePresence } from 'motion/react';
 import { useActiveSection } from './hooks/useActiveSection';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -217,23 +218,9 @@ export function Header() {
               </div>
             </nav>
 
-            {/* Desktop CTA Buttons */}
+            {/* Desktop CTA Buttons / Auth Links */}
             <div className="hidden lg:flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                size={scrolled ? 'sm' : 'default'}
-                className="text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                onClick={() => window.location.hash = 'login'}
-              >
-                Connexion
-              </Button>
-              <Button 
-                size={scrolled ? 'sm' : 'default'}
-                className="bg-gradient-to-r from-[#FF6B35] to-[#F7931E] hover:from-[#F7931E] hover:to-[#FF6B35] text-white rounded-xl shadow-lg shadow-[#FF6B35]/30 hover:shadow-xl hover:shadow-[#FF6B35]/40 transition-all" 
-                onClick={() => window.location.hash = 'register'}
-              >
-                Démarrer maintenant
-              </Button>
+              <AuthButtons />
             </div>
 
             {/* Mobile Menu Button */}
@@ -382,6 +369,85 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+    </>
+  );
+}
+
+function AuthButtons() {
+  const { isAuthenticated, user, logout } = useAuth();
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Button 
+          variant="ghost" 
+          size="default"
+          className="text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+          onClick={() => window.location.hash = 'login'}
+        >
+          Connexion
+        </Button>
+        <Button 
+          size="default"
+          className="bg-gradient-to-r from-[#FF6B35] to-[#F7931E] hover:from-[#F7931E] hover:to-[#FF6B35] text-white rounded-xl shadow-lg shadow-[#FF6B35]/30 hover:shadow-xl hover:shadow-[#FF6B35]/40 transition-all" 
+          onClick={() => window.location.hash = 'register'}
+        >
+          Démarrer maintenant
+        </Button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <a href="#dashboard" className="text-gray-300 hover:text-white">Tableau de bord</a>
+      <a href="#profile" className="text-gray-300 hover:text-white">Profil</a>
+      <Button variant="ghost" className="text-gray-300" onClick={() => logout()}>Déconnexion</Button>
+      {user?.avatar ? (
+        <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full ml-2" />
+      ) : (
+        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm text-white ml-2">{user?.name?.charAt(0)}</div>
+      )}
+    </>
+  );
+}
+
+function MobileAuthButtons({ onClose }: { onClose: () => void }) {
+  const { isAuthenticated, logout } = useAuth();
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Button 
+          variant="outline" 
+          size="lg"
+          className="border-white/20 text-white hover:bg-white/5 rounded-xl w-full justify-center"
+          onClick={() => { 
+            window.location.hash = 'login'; 
+            onClose(); 
+          }}
+        >
+          Connexion
+        </Button>
+        <Button 
+          size="lg"
+          className="bg-gradient-to-r from-[#FF6B35] to-[#F7931E] hover:from-[#F7931E] hover:to-[#FF6B35] text-white rounded-xl w-full justify-center shadow-lg shadow-[#FF6B35]/30" 
+          onClick={() => { 
+            window.location.hash = 'register'; 
+            onClose(); 
+          }}
+        >
+          Démarrer maintenant
+        </Button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <a href="#dashboard" onClick={onClose} className="w-full text-left text-white block py-3">Tableau de bord</a>
+      <a href="#profile" onClick={onClose} className="w-full text-left text-white block py-3">Profil</a>
+      <Button variant="outline" size="lg" className="w-full" onClick={() => { logout(); onClose(); }}>Déconnexion</Button>
     </>
   );
 }

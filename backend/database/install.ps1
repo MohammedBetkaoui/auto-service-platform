@@ -194,5 +194,5 @@ Write-Host ""
 Write-Host "🔐 Comptes de test:" -ForegroundColor Yellow
 Write-Host "Admin: admin@autoservice.com / password123" -ForegroundColor White
 Write-Host "Client: mohammed.alami@gmail.com / password123" -ForegroundColor White
-Write-Host "Worker: karim.mechanic@gmail.com / password123" -ForegroundColor White
+Write-Host "provider: karim.mechanic@gmail.com / password123" -ForegroundColor White
 Write-Host ""

@@ -32,7 +32,7 @@ export class AuthService {
   /**
    * Inscription d'un nouvel utilisateur
    */
-  async register(registerDto: RegisterDto): Promise<{ message: string; user: Partial<User> }> {
+  async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { full_name, email, password, phone, role } = registerDto;
 
     // Vérifier si l'email existe déjà
@@ -51,17 +51,17 @@ export class AuthService {
       is_verified: true, // Par défaut, le compte est vérifié
     });
 
-    // TODO: Générer un token de vérification et envoyer un email de vérification
-    // const verificationToken = await this.generateVerificationToken(user.id, user.email);
-    // await this.emailService.sendVerificationEmail(user.email, verificationToken);
+    // Générer les tokens
+    const tokens = await this.generateTokens(user.id, user.email, user.role);
 
     return {
-      message: 'Compte créé avec succès. Vous pouvez maintenant vous connecter.',
+      ...tokens,
       user: {
         id: user.id,
         full_name: user.full_name,
         email: user.email,
         role: user.role,
+        is_verified: user.is_verified,
       },
     };
   }

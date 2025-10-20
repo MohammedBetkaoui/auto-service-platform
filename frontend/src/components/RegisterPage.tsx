@@ -9,6 +9,7 @@ import { SuccessMessage } from './register/SuccessMessage';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
 import { Logo } from './Logo';
+import { useAuth } from '../contexts/AuthContext';
 
 type UserType = 'client' | 'provider' | null;
 
@@ -35,6 +36,9 @@ export function RegisterPage() {
   const [userType, setUserType] = useState<UserType>(null);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [isComplete, setIsComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { register } = useAuth();
 
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
@@ -62,10 +66,24 @@ export function RegisterPage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleConfirm = () => {
-    // Here you would typically send the data to your backend
-    console.log('Form submitted:', { userType, ...formData });
-    setIsComplete(true);
+  const handleConfirm = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const registerData = {
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.fullName,
+        phone: formData.phone,
+        role: (userType === 'client' ? 'client' : 'provider') as 'client' | 'provider',
+      };
+      await register(registerData);
+      // Redirection handled in AuthContext
+    } catch (err: any) {
+      setError(err.message || 'Erreur lors de l\'inscription');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBackToHome = () => {

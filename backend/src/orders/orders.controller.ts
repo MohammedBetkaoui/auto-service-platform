@@ -16,7 +16,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../entities/user.entity';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { AssignWorkerDto } from './dto/assign-worker.dto';
+import { AssignproviderDto } from './dto/assign-provider.dto';
 
 @Controller()
 export class OrdersController {
@@ -31,34 +31,34 @@ export class OrdersController {
     return { message: 'Order created', order };
   }
 
-  // Worker accepts
+  // provider accepts
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Patch('orders/:id/accept')
-  async accept(@Request() req, @Param('id', ParseIntPipe) id: number, @Body() dto: AssignWorkerDto) {
+  async accept(@Request() req, @Param('id', ParseIntPipe) id: number, @Body() dto: AssignproviderDto) {
     const res = await this.ordersService.accept(req.user.id, id, dto);
     return { message: 'Order accepted', order: res };
   }
 
-  // Worker starts
+  // provider starts
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Patch('orders/:id/start')
   async start(@Request() req, @Param('id', ParseIntPipe) id: number) {
     const res = await this.ordersService.start(req.user.id, id);
     return { message: 'Order started', order: res };
   }
 
-  // Worker completes
+  // provider completes
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Patch('orders/:id/complete')
   async complete(@Request() req, @Param('id', ParseIntPipe) id: number) {
     const res = await this.ordersService.complete(req.user.id, id);
     return { message: 'Order completed', order: res };
   }
 
-  // Cancel by client/worker/admin
+  // Cancel by client/provider/admin
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('orders/:id/cancel')
   async cancel(@Request() req, @Param('id', ParseIntPipe) id: number) {

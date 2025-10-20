@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
 import { Logo } from './Logo';
 import { useAuth } from '../contexts/AuthContext';
 
-type UserRole = 'client' | 'worker' | 'admin';
+type UserRole = 'client' | 'provider' | 'admin';
 
 export function LoginPage() {
   const [selectedRole, setSelectedRole] = useState<UserRole>('client');
@@ -42,8 +42,8 @@ export function LoginPage() {
     setIsLoading(true);
 
     try {
-      await login(formData.emailOrPhone, formData.password, selectedRole);
-      window.location.hash = 'dashboard';
+      await login(formData.emailOrPhone, formData.password);
+      // Redirection is handled in AuthContext
     } catch (err) {
       setError('Email ou mot de passe incorrect');
     } finally {
@@ -64,7 +64,7 @@ export function LoginPage() {
     switch (role) {
       case 'client':
         return 'Client';
-      case 'worker':
+      case 'provider':
         return 'Prestataire';
       case 'admin':
         return 'Administrateur';
@@ -139,7 +139,7 @@ export function LoginPage() {
                       Client
                     </TabsTrigger>
                     <TabsTrigger 
-                      value="worker" 
+                      value="provider" 
                       className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FF6B35] data-[state=active]:to-[#F7931E] data-[state=active]:text-white text-gray-400"
                     >
                       Prestataire

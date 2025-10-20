@@ -13,7 +13,7 @@ import { Notification } from './notification.entity';
 
 export enum UserRole {
   CLIENT = 'client',
-  WORKER = 'provider',
+  provider = 'provider',
   ADMIN = 'admin',
 }
 
@@ -66,7 +66,7 @@ export class User {
   })
   status: 'active' | 'inactive' | 'banned';
 
-  // For workers: availability flag
+  // For providers: availability flag
   @Column({ type: 'boolean', default: false })
   is_available: boolean;
 
@@ -83,14 +83,14 @@ export class User {
   @OneToMany(() => Order, (order) => order.client)
   clientOrders: Order[];
 
-  @OneToMany(() => Order, (order) => order.worker)
-  workerOrders: Order[];
+  @OneToMany(() => Order, (order) => order.provider)
+  providerOrders: Order[];
 
   @OneToMany(() => Review, (review) => review.client)
   clientReviews: Review[];
 
-  @OneToMany(() => Review, (review) => review.worker)
-  workerReviews: Review[];
+  @OneToMany(() => Review, (review) => review.provider)
+  providerReviews: Review[];
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];

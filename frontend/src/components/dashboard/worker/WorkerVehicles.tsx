@@ -84,7 +84,7 @@ const availableServices = [
   'Carburant Express'
 ];
 
-export function WorkerVehicles() {
+export function providerVehicles() {
   const [vehicles, setVehicles] = useState(mockVehicles);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);

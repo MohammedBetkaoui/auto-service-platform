@@ -28,7 +28,7 @@ export class RegisterDto {
   phone: string;
 
   @IsNotEmpty({ message: 'Le rôle est requis' })
-  @IsEnum(UserRole, { message: 'Le rôle doit être client, worker ou admin' })
+  @IsEnum(UserRole, { message: 'Le rôle doit être client, provider ou admin' })
   role: UserRole;
 
   // Optional profile fields

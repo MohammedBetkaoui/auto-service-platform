@@ -5,7 +5,7 @@
 La plateforme AutoServe DZ supporte 3 types d'utilisateurs avec des fonctionnalités spécifiques :
 
 1. **Client** - Propriétaire de véhicule
-2. **Worker (Prestataire)** - Fournisseur de services mobiles
+2. **provider (Prestataire)** - Fournisseur de services mobiles
 3. **Admin** - Administrateur de la plateforme
 
 ---
@@ -76,7 +76,7 @@ La plateforme AutoServe DZ supporte 3 types d'utilisateurs avec des fonctionnali
 
 ---
 
-## 🚛 2. WORKER (Prestataire)
+## 🚛 2. provider (Prestataire)
 
 ### Fonctionnalités
 
@@ -120,7 +120,7 @@ La plateforme AutoServe DZ supporte 3 types d'utilisateurs avec des fonctionnali
 - **Zones de service** définies
 - **Horaires** de disponibilité
 
-### Sections du Dashboard Worker
+### Sections du Dashboard provider
 
 ```
 /dashboard (home)
@@ -171,7 +171,7 @@ La plateforme AutoServe DZ supporte 3 types d'utilisateurs avec des fonctionnali
 
 #### 👥 Gestion des Utilisateurs
 - **Accéder** à la liste de tous les utilisateurs
-- **Filtrer** par rôle (client, worker, admin)
+- **Filtrer** par rôle (client, provider, admin)
 - **Rechercher** un utilisateur
 - **Voir** les profils détaillés
 - **Mettre à jour le statut** :
@@ -246,7 +246,7 @@ La plateforme AutoServe DZ supporte 3 types d'utilisateurs avec des fonctionnali
 
 ### Matrice des Permissions
 
-| Fonctionnalité | Client | Worker | Admin |
+| Fonctionnalité | Client | provider | Admin |
 |----------------|--------|--------|-------|
 | Voir son profil | ✅ | ✅ | ✅ |
 | Modifier son profil | ✅ | ✅ | ✅ |
@@ -268,7 +268,7 @@ La plateforme AutoServe DZ supporte 3 types d'utilisateurs avec des fonctionnali
 ### Badges de Rôle
 
 - **Client** : Bleu (`blue-500`)
-- **Worker** : Violet (`purple-500`)
+- **provider** : Violet (`purple-500`)
 - **Admin** : Rouge (`red-500`)
 
 ### Couleurs de Statut
@@ -293,8 +293,8 @@ const { login } = useAuth();
 // Client
 await login('client@email.com', 'password', 'client');
 
-// Worker
-await login('worker@email.com', 'password', 'worker');
+// provider
+await login('provider@email.com', 'password', 'provider');
 
 // Admin
 await login('admin@email.com', 'password', 'admin');
@@ -312,8 +312,8 @@ function MyComponent() {
     // Contenu admin uniquement
   }
   
-  if (user?.role === 'worker') {
-    // Contenu worker uniquement
+  if (user?.role === 'provider') {
+    // Contenu provider uniquement
   }
   
   if (user?.role === 'client') {
@@ -340,14 +340,14 @@ function MyComponent() {
 1. Client se connecte
 2. Choisit un service
 3. Remplit les détails
-4. Système trouve un worker disponible
-5. Worker accepte la commande
+4. Système trouve un provider disponible
+5. provider accepte la commande
 6. Service effectué
 7. Client laisse un avis
 8. Paiement traité
 
-### Worker ajoute un véhicule
-1. Worker se connecte
+### provider ajoute un véhicule
+1. provider se connecte
 2. Va dans "Mes véhicules"
 3. Clique "Ajouter un véhicule"
 4. Remplit le formulaire

@@ -19,11 +19,11 @@ INSERT INTO users (full_name, email, phone, password_hash, role, is_verified) VA
 ('Youssef Bennani', 'youssef.bennani@gmail.com', '+212600333333', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'client', TRUE),
 ('Amina El Fassi', 'amina.elfassi@gmail.com', '+212600444444', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'client', FALSE),
 
--- Prestataires (Workers)
-('Karim Mechanic', 'karim.mechanic@gmail.com', '+212600555555', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'worker', TRUE),
-('Hassan Towing', 'hassan.towing@gmail.com', '+212600666666', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'worker', TRUE),
-('Rachid Carwash', 'rachid.carwash@gmail.com', '+212600777777', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'worker', TRUE),
-('Omar Service', 'omar.service@gmail.com', '+212600888888', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'worker', TRUE);
+-- Prestataires (providers)
+('Karim Mechanic', 'karim.mechanic@gmail.com', '+212600555555', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'provider', TRUE),
+('Hassan Towing', 'hassan.towing@gmail.com', '+212600666666', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'provider', TRUE),
+('Rachid Carwash', 'rachid.carwash@gmail.com', '+212600777777', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'provider', TRUE),
+('Omar Service', 'omar.service@gmail.com', '+212600888888', '$2b$10$rKvVZQk5XkJxLMQXvxVzLuYmZH7xJ8KqNH6p.ZVxLQXvxVzLuYmZH', 'provider', TRUE);
 
 -- ============================================================
 -- 2. Insertion des services
@@ -60,7 +60,7 @@ INSERT INTO vehicles (user_id, brand, model, license_plate, capacity, is_availab
 -- ============================================================
 -- 4. Insertion des commandes
 -- ============================================================
-INSERT INTO orders (client_id, worker_id, service_id, vehicle_id, status, price, location) VALUES
+INSERT INTO orders (client_id, provider_id, service_id, vehicle_id, status, price, location) VALUES
 -- Commandes complétées
 (2, 6, 1, 1, 'completed', 300.00, 'Avenue Mohammed V, Casablanca'),
 (3, 7, 2, 3, 'completed', 250.00, 'Route de Rabat, Témara'),
@@ -98,7 +98,7 @@ INSERT INTO payments (order_id, amount, method, status, transaction_id) VALUES
 -- ============================================================
 -- 6. Insertion des avis
 -- ============================================================
-INSERT INTO reviews (order_id, client_id, worker_id, rating, comment) VALUES
+INSERT INTO reviews (order_id, client_id, provider_id, rating, comment) VALUES
 (1, 2, 6, 5, 'Excellent service ! Karim est très professionnel et rapide. Je recommande vivement.'),
 (2, 3, 7, 4, 'Bon service de remorquage, mais le délai était un peu long. Sinon très satisfait.'),
 (3, 4, 8, 5, 'Lavage impeccable ! Ma voiture brille comme neuve. Merci Rachid !'),
@@ -133,7 +133,7 @@ SELECT
     'STATISTIQUES' as info,
     (SELECT COUNT(*) FROM users) as total_users,
     (SELECT COUNT(*) FROM users WHERE role='client') as clients,
-    (SELECT COUNT(*) FROM users WHERE role='worker') as workers,
+    (SELECT COUNT(*) FROM users WHERE role='provider') as providers,
     (SELECT COUNT(*) FROM services) as services,
     (SELECT COUNT(*) FROM vehicles) as vehicles,
     (SELECT COUNT(*) FROM orders) as orders,

@@ -45,7 +45,7 @@ CREATE TABLE `notifications` (
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `client_id` int(11) NOT NULL,
-  `worker_id` int(11) DEFAULT NULL,
+  `provider_id` int(11) DEFAULT NULL,
   `service_id` int(11) NOT NULL,
   `vehicle_id` int(11) DEFAULT NULL,
   `status` enum('pending','accepted','in_progress','completed','cancelled') NOT NULL DEFAULT 'pending',
@@ -99,7 +99,7 @@ CREATE TABLE `payments` (
 
 CREATE TABLE `ratings_summary` (
   `id` int(11) NOT NULL,
-  `worker_id` int(11) DEFAULT NULL,
+  `provider_id` int(11) DEFAULT NULL,
   `total_reviews` int(11) NOT NULL DEFAULT 0,
   `avg_rating` decimal(3,2) NOT NULL DEFAULT 0.00,
   `last_update` datetime NOT NULL DEFAULT current_timestamp()
@@ -115,7 +115,7 @@ CREATE TABLE `reviews` (
   `id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `client_id` int(11) NOT NULL,
-  `worker_id` int(11) NOT NULL,
+  `provider_id` int(11) NOT NULL,
   `service_id` int(11) DEFAULT NULL,
   `vehicle_id` int(11) DEFAULT NULL,
   `rating` tinyint(4) NOT NULL,
@@ -174,7 +174,7 @@ CREATE TABLE `users` (
   `email` varchar(120) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `role` enum('client','worker','admin') NOT NULL DEFAULT 'client',
+  `role` enum('client','provider','admin') NOT NULL DEFAULT 'client',
   `is_verified` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -192,7 +192,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `password_hash`, `role`, `is_verified`, `created_at`, `updated_at`, `avatar_url`, `address`, `city`, `latitude`, `longitude`, `status`, `is_available`) VALUES
-(1, 'Youssef El Amrani', 'youssef@example.com', '+212612345678', '$2b$12$hTeieCxcD3ApnwSiFAdjA.vyYD76rv1jWAQvA1yrJcNuVTayM0f6.', 'worker', 1, '2025-10-18 16:05:03', '2025-10-18 16:05:10', NULL, NULL, NULL, NULL, NULL, 'active', 0);
+(1, 'Youssef El Amrani', 'youssef@example.com', '+212612345678', '$2b$12$hTeieCxcD3ApnwSiFAdjA.vyYD76rv1jWAQvA1yrJcNuVTayM0f6.', 'provider', 1, '2025-10-18 16:05:03', '2025-10-18 16:05:10', NULL, NULL, NULL, NULL, NULL, 'active', 0);
 
 -- --------------------------------------------------------
 
@@ -238,7 +238,7 @@ ALTER TABLE `orders`
   ADD KEY `service_id` (`service_id`),
   ADD KEY `vehicle_id` (`vehicle_id`),
   ADD KEY `idx_client_id` (`client_id`),
-  ADD KEY `idx_worker_id` (`worker_id`),
+  ADD KEY `idx_provider_id` (`provider_id`),
   ADD KEY `idx_status` (`status`),
   ADD KEY `idx_created_at` (`created_at`),
   ADD KEY `idx_region` (`region`),
@@ -266,7 +266,7 @@ ALTER TABLE `payments`
 --
 ALTER TABLE `ratings_summary`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_ratings_worker` (`worker_id`);
+  ADD KEY `idx_ratings_provider` (`provider_id`);
 
 --
 -- Index pour la table `reviews`
@@ -275,7 +275,7 @@ ALTER TABLE `reviews`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `order_id_unique` (`order_id`),
   ADD KEY `client_id` (`client_id`),
-  ADD KEY `worker_id` (`worker_id`),
+  ADD KEY `provider_id` (`provider_id`),
   ADD KEY `idx_rating` (`rating`);
 
 --
@@ -394,7 +394,7 @@ ALTER TABLE `notifications`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`worker_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`provider_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `orders_ibfk_4` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE SET NULL;
 
@@ -414,7 +414,7 @@ ALTER TABLE `payments`
 -- Contraintes pour la table `ratings_summary`
 --
 ALTER TABLE `ratings_summary`
-  ADD CONSTRAINT `fk_ratings_summary_worker` FOREIGN KEY (`worker_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_ratings_summary_provider` FOREIGN KEY (`provider_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `reviews`
@@ -422,7 +422,7 @@ ALTER TABLE `ratings_summary`
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `reviews_ibfk_3` FOREIGN KEY (`worker_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `reviews_ibfk_3` FOREIGN KEY (`provider_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `service_pricing`

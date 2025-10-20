@@ -5,7 +5,7 @@ export class CreateReviewDto {
   order_id: number;
 
   @IsInt()
-  worker_id: number;
+  provider_id: number;
 
   @IsInt()
   @Min(1)

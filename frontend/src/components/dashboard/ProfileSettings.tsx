@@ -11,6 +11,8 @@ import { Separator } from '../ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
+import { userApi } from '../../api/userApi';
+import { useAuth } from '../../contexts/AuthContext';
 
 type UserRole = 'client' | 'provider' | 'admin';
 
@@ -20,18 +22,19 @@ interface ProfileSettingsProps {
 
 export function ProfileSettings({ userRole }: ProfileSettingsProps) {
   const { showConfirm, ConfirmDialog } = useConfirmDialog();
+  const { user, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    fullName: userRole === 'client' ? 'Ahmed Benali' : 'Karim Auto Service',
-    email: 'ahmed.benali@example.com',
-    phone: '0555 123 456',
-    address: '15 Rue Didouche Mourad, Alger',
-    city: 'Alger',
-    bio: userRole === 'provider' ? 'Service professionnel de lavage automobile mobile. Plus de 10 ans d\'expérience.' : '',
-    // Provider specific
-    companyName: 'Karim Auto Service',
-    siret: '123 456 789 00012',
-    serviceArea: 'Alger, Blida, Tipaza',
+    fullName: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    // Les champs suivants sont vides car non présents dans le type User
+    address: '',
+    city: '',
+    bio: '',
+    companyName: '',
+    siret: '',
+    serviceArea: '',
   });
 
   const [notifications, setNotifications] = useState({
@@ -48,17 +51,27 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
     confirmPassword: '',
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     showConfirm({
       title: 'Enregistrer les modifications',
       description: 'Voulez-vous enregistrer les modifications apportées à votre profil ?',
       confirmText: 'Enregistrer',
       cancelText: 'Annuler',
       type: 'success',
-      onConfirm: () => {
-        setIsEditing(false);
-        toast.success('Profil mis à jour avec succès');
-        console.log('Profile saved:', profileData);
+      onConfirm: async () => {
+        try {
+          const updateData = {
+            full_name: profileData.fullName,
+            email: profileData.email,
+            phone: profileData.phone,
+          };
+          const res = await userApi.updateProfile(updateData);
+          updateUser(res.user);
+          setIsEditing(false);
+          toast.success('Profil mis à jour avec succès');
+        } catch (e) {
+          toast.error('Erreur lors de la mise à jour du profil');
+        }
       },
     });
   };
@@ -461,7 +474,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
               <div className="flex items-center justify-between py-4 border-b border-white/10">
                 <div>
                   <p className="text-white mb-1">Mises à jour de commandes</p>
-                  <p className="text-sm text-gray-400">Notifications sur l'état de vos commandes</p>
+                  <p className="text-sm text-gray-400">Notifications on l'état de vos commandes</p>
                 </div>
                   <Switch
                     checked={notifications.orderUpdates}

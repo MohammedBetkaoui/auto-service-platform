@@ -66,7 +66,7 @@ Key goals:
   - Admin user management endpoints
 
 - Vehicles Module (`src/vehicles`)
-  - Vehicle CRUD for workers, admin approval flow, availability toggles
+  - Vehicle CRUD for providers, admin approval flow, availability toggles
 
 - Services Module (`src/services`)
   - Service catalog and `service_pricing` for region & vehicle type pricing
@@ -78,7 +78,7 @@ Key goals:
 
 - Reviews Module (`src/reviews`)
   - Create review (one per order), summary rating table (`ratings_summary`)
-  - Update worker/service/vehicle ratings
+  - Update provider/service/vehicle ratings
 
 - Notifications Module (`src/notifications`)
   - Persisted notifications, REST endpoints for history, Socket.io gateway to push notifications
@@ -106,8 +106,8 @@ All endpoints are prefixed with `/api` (global prefix in `main.ts`). Below is a 
   - Admin: `/api/admin/users` endpoints
 
 - Vehicles
-  - `POST /api/vehicles` — create (worker)
-  - `GET /api/vehicles/my` — list worker vehicles
+  - `POST /api/vehicles` — create (provider)
+  - `GET /api/vehicles/my` — list provider vehicles
   - `PATCH /api/vehicles/:id` — update
   - Admin: `/api/admin/vehicles` endpoints
 
@@ -118,16 +118,16 @@ All endpoints are prefixed with `/api` (global prefix in `main.ts`). Below is a 
 
 - Orders
   - `POST /api/orders` — create order (client)
-  - `PATCH /api/orders/:id/accept` — worker accept
-  - `PATCH /api/orders/:id/start` — worker start
-  - `PATCH /api/orders/:id/complete` — worker complete
-  - `PATCH /api/orders/:id/cancel` — cancel (client/worker/admin)
+  - `PATCH /api/orders/:id/accept` — provider accept
+  - `PATCH /api/orders/:id/start` — provider start
+  - `PATCH /api/orders/:id/complete` — provider complete
+  - `PATCH /api/orders/:id/cancel` — cancel (client/provider/admin)
   - Admin: `/api/admin/orders` endpoints
 
 - Reviews
   - `POST /api/reviews` — create review (client, after order completed)
   - `GET /api/reviews/my` — my reviews
-  - `GET /api/reviews/received` — worker received
+  - `GET /api/reviews/received` — provider received
   - `PATCH /api/reviews/:id/report` — report abuse
 
 - Notifications
@@ -242,7 +242,7 @@ No comprehensive tests are included yet. Recommended tests to add:
 - Use Redis (adapter) for socket broadcasting if you run multiple instances.
 - Offload file uploads to S3/Cloudinary for scalability and security; store only URL in DB.
 - Implement rate-limiting on gateways to prevent spam/DDoS.
-- Add a background worker (BullMQ) for async tasks (notifications delivery, emails, cleanup).
+- Add a background provider (BullMQ) for async tasks (notifications delivery, emails, cleanup).
 - Add TypeORM migrations (ts) for each schema change and version them in `database/migrations`.
 
 ---

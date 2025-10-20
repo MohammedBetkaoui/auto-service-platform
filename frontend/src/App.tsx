@@ -7,9 +7,6 @@ import { ProvidersSection } from './components/ProvidersSection';
 import { Testimonials } from './components/Testimonials';
 import { AppSection } from './components/AppSection';
 import { Footer } from './components/Footer';
-import { RegisterPage } from './components/RegisterPage';
-import { LoginPage } from './components/LoginPage';
-import { DashboardPage } from './components/DashboardPage';
 import { LavageService } from './components/services/LavageService';
 import { EntretienService } from './components/services/EntretienService';
 import { AssistanceService } from './components/services/AssistanceService';
@@ -19,11 +16,11 @@ import { CarburantService } from './components/services/CarburantService';
 import { ScrollToTop } from './components/ScrollToTop';
 import { ScrollProgress } from './components/ScrollProgress';
 import { PageLoader } from './components/PageLoader';
-import { AuthProvider } from './contexts/AuthContext';
+import { AppRouter } from './router/AppRouter';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState<'home' | 'register' | 'login' | 'dashboard' | 'service-lavage' | 'service-entretien' | 'service-assistance' | 'service-detailing' | 'service-batterie' | 'service-carburant'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'register' | 'login' | 'dashboard' | 'forgot-password' | 'reset-password' | 'verify' | 'service-lavage' | 'service-entretien' | 'service-assistance' | 'service-detailing' | 'service-batterie' | 'service-carburant'>('home');
 
   // Simple hash-based routing
   useEffect(() => {
@@ -39,6 +36,12 @@ export default function App() {
         setCurrentPage('login');
       } else if (hash === 'dashboard' || hash === 'tableau-de-bord') {
         setCurrentPage('dashboard');
+      } else if (hash === 'forgot-password' || hash === 'mot-de-passe-oublie') {
+        setCurrentPage('forgot-password');
+      } else if (hash === 'reset-password' || hash === 'reinitialiser-mot-de-passe') {
+        setCurrentPage('reset-password');
+      } else if (hash === 'verify' || hash === 'verifier') {
+        setCurrentPage('verify');
       } else if (hash === 'service-lavage') {
         setCurrentPage('service-lavage');
       } else if (hash === 'service-entretien') {
@@ -66,112 +69,90 @@ export default function App() {
     return <PageLoader onLoadComplete={() => setIsLoading(false)} />;
   }
 
-  if (currentPage === 'register') {
-    return (
-      <AuthProvider>
-        <RegisterPage />
-      </AuthProvider>
-    );
-  }
-
-  if (currentPage === 'login') {
-    return (
-      <AuthProvider>
-        <LoginPage />
-      </AuthProvider>
-    );
-  }
-
-  if (currentPage === 'dashboard') {
-    return (
-      <AuthProvider>
-        <DashboardPage />
-      </AuthProvider>
-    );
-  }
+  // Use AppRouter to handle public/protected rendering
+  const routerOutput = AppRouter({ currentPage });
+  if (routerOutput) return <>{routerOutput}</>;
 
   if (currentPage === 'service-lavage') {
     return (
-      <AuthProvider>
+      <>
         <Header />
         <LavageService />
         <Footer />
         <ScrollToTop />
-      </AuthProvider>
+      </>
     );
   }
 
   if (currentPage === 'service-entretien') {
     return (
-      <AuthProvider>
+      <>
         <Header />
         <EntretienService />
         <Footer />
         <ScrollToTop />
-      </AuthProvider>
+      </>
     );
   }
 
   if (currentPage === 'service-assistance') {
     return (
-      <AuthProvider>
+      <>
         <Header />
         <AssistanceService />
         <Footer />
         <ScrollToTop />
-      </AuthProvider>
+      </>
     );
   }
 
   if (currentPage === 'service-detailing') {
     return (
-      <AuthProvider>
+      <>
         <Header />
         <DetailingService />
         <Footer />
         <ScrollToTop />
-      </AuthProvider>
+      </>
     );
   }
 
   if (currentPage === 'service-batterie') {
     return (
-      <AuthProvider>
+      <>
         <Header />
         <BatterieService />
         <Footer />
         <ScrollToTop />
-      </AuthProvider>
+      </>
     );
   }
 
   if (currentPage === 'service-carburant') {
     return (
-      <AuthProvider>
+      <>
         <Header />
         <CarburantService />
         <Footer />
         <ScrollToTop />
-      </AuthProvider>
+      </>
     );
   }
 
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-[#0A0A0A]">
-        <ScrollProgress />
-        <Header />
-        <main>
-          <Hero />
-          <ServicesSection />
-          <HowItWorks />
-          <ProvidersSection />
-          <Testimonials />
-          <AppSection />
-        </main>
-        <Footer />
-        <ScrollToTop />
-      </div>
-    </AuthProvider>
+    <div className="min-h-screen bg-[#0A0A0A]">
+      <ScrollProgress />
+      <Header />
+      <main>
+        <Hero />
+        <ServicesSection />
+        <HowItWorks />
+        <ProvidersSection />
+        <Testimonials />
+        <AppSection />
+      </main>
+      <Footer />
+      <ScrollToTop />
+    </div>
   );
 }

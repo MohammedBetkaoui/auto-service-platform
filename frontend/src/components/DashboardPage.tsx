@@ -14,8 +14,8 @@ import { Messaging } from './dashboard/Messaging';
 import { ProfileSettings } from './dashboard/ProfileSettings';
 import { ClientOrders } from './dashboard/client/ClientOrders';
 import { ClientReviews } from './dashboard/client/ClientReviews';
-import { WorkerVehicles } from './dashboard/worker/WorkerVehicles';
-import { WorkerOrders } from './dashboard/worker/WorkerOrders';
+import { providerVehicles as ProviderVehicles } from './dashboard/provider/providerVehicles';
+import { providerOrders as ProviderOrders } from './dashboard/provider/providerOrders';
 import { AdminUsers } from './dashboard/admin/AdminUsers';
 import { AdminVehicles } from './dashboard/admin/AdminVehicles';
 import { Toaster } from './ui/sonner';
@@ -37,7 +37,7 @@ export function DashboardPage() {
   }
 
   // Convert role for backward compatibility
-  const userRole = user.role === 'worker' ? 'provider' : user.role;
+  const userRole = user.role === 'provider' ? 'provider' : user.role;
 
   const renderContent = () => {
     // Client specific sections
@@ -120,8 +120,8 @@ export function DashboardPage() {
       }
     }
 
-    // Worker specific sections
-    if (user.role === 'worker') {
+    // provider specific sections
+    if (user.role === 'provider') {
       switch (activeSection) {
         case 'dashboard':
           return (
@@ -160,14 +160,14 @@ export function DashboardPage() {
           }
           return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <WorkerOrders />
+              <ProviderOrders />
             </motion.div>
           );
 
         case 'vehicles':
           return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <WorkerVehicles />
+              <ProviderVehicles />
             </motion.div>
           );
 
@@ -301,10 +301,7 @@ export function DashboardPage() {
           {renderContent()}
         </main>
 
-        {/* Footer */}
-        <footer className="px-6 lg:px-8 py-6 text-center text-sm text-gray-500 border-t border-white/10">
-          <p>© 2025 AutoServe DZ. Tous droits réservés.</p>
-        </footer>
+        
       </div>
       
       {/* Toast Notifications */}

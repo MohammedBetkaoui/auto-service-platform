@@ -92,7 +92,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.WORKER)
+  @Roles(UserRole.provider)
   @Patch('users/status')
   async updateStatus(@Request() req, @Body() dto: UpdateStatusDto) {
     const userId = req.user?.id;
@@ -136,10 +136,10 @@ export class UsersController {
     return { message: 'Votre compte a été supprimé avec succès' };
   }
 
-  // Public worker profile
-  @Get('users/worker/:id')
-  async getWorkerPublic(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getWorkerPublicProfile(id);
+  // Public provider profile
+  @Get('users/provider/:id')
+  async getproviderPublic(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getproviderPublicProfile(id);
   }
 
   // Admin routes

@@ -13,7 +13,7 @@ SELECT
     o.status,
     c.full_name AS client_name,
     c.phone AS client_phone,
-    w.full_name AS worker_name,
+    w.full_name AS provider_name,
     s.name AS service_name,
     v.brand AS vehicle_brand,
     v.model AS vehicle_model,
@@ -22,7 +22,7 @@ SELECT
     o.created_at
 FROM orders o
 LEFT JOIN users c ON o.client_id = c.id
-LEFT JOIN users w ON o.worker_id = w.id
+LEFT JOIN users w ON o.provider_id = w.id
 LEFT JOIN services s ON o.service_id = s.id
 LEFT JOIN vehicles v ON o.vehicle_id = v.id
 ORDER BY o.created_at DESC;
@@ -32,7 +32,7 @@ ORDER BY o.created_at DESC;
 -- ============================================================
 SELECT 
     u.id,
-    u.full_name AS worker_name,
+    u.full_name AS provider_name,
     u.phone,
     COUNT(DISTINCT o.id) AS total_orders,
     COUNT(DISTINCT CASE WHEN o.status = 'completed' THEN o.id END) AS completed_orders,
@@ -40,10 +40,10 @@ SELECT
     COUNT(DISTINCT r.id) AS total_reviews,
     COUNT(DISTINCT v.id) AS total_vehicles
 FROM users u
-LEFT JOIN orders o ON u.id = o.worker_id
-LEFT JOIN reviews r ON u.id = r.worker_id
+LEFT JOIN orders o ON u.id = o.provider_id
+LEFT JOIN reviews r ON u.id = r.provider_id
 LEFT JOIN vehicles v ON u.id = v.user_id
-WHERE u.role = 'worker'
+WHERE u.role = 'provider'
 GROUP BY u.id, u.full_name, u.phone
 ORDER BY average_rating DESC, completed_orders DESC;
 
@@ -118,7 +118,7 @@ LIMIT 5;
 -- 7. Véhicules disponibles par prestataire
 -- ============================================================
 SELECT 
-    u.full_name AS worker_name,
+    u.full_name AS provider_name,
     u.phone,
     v.brand,
     v.model,
@@ -150,14 +150,14 @@ ORDER BY u.full_name, n.created_at DESC;
 SELECT 
     r.id AS review_id,
     c.full_name AS client_name,
-    w.full_name AS worker_name,
+    w.full_name AS provider_name,
     s.name AS service_name,
     r.rating,
     r.comment,
     r.created_at
 FROM reviews r
 JOIN users c ON r.client_id = c.id
-JOIN users w ON r.worker_id = w.id
+JOIN users w ON r.provider_id = w.id
 JOIN orders o ON r.order_id = o.id
 JOIN services s ON o.service_id = s.id
 ORDER BY r.created_at DESC
@@ -171,7 +171,7 @@ SELECT
 UNION ALL
 SELECT 'Total Clients', COUNT(*) FROM users WHERE role='client'
 UNION ALL
-SELECT 'Total Workers', COUNT(*) FROM users WHERE role='worker'
+SELECT 'Total providers', COUNT(*) FROM users WHERE role='provider'
 UNION ALL
 SELECT 'Total Services', COUNT(*) FROM services
 UNION ALL

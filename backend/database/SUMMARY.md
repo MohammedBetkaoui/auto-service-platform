@@ -34,10 +34,10 @@ backend/
 
 | # | Table | Description | Champs clés |
 |---|-------|-------------|-------------|
-| 1 | **users** | Utilisateurs (clients, workers, admin) | id, email, role, password_hash |
+| 1 | **users** | Utilisateurs (clients, providers, admin) | id, email, role, password_hash |
 | 2 | **vehicles** | Véhicules des prestataires | id, user_id, brand, model |
 | 3 | **services** | Services proposés | id, name, base_price |
-| 4 | **orders** | Commandes/réservations | id, client_id, worker_id, status |
+| 4 | **orders** | Commandes/réservations | id, client_id, provider_id, status |
 | 5 | **payments** | Paiements | id, order_id, amount, status |
 | 6 | **reviews** | Avis clients | id, order_id, rating, comment |
 | 7 | **notifications** | Notifications utilisateurs | id, user_id, message, is_read |
@@ -49,7 +49,7 @@ backend/
 ```
 users (1) ──── (N) vehicles
 users (1) ──── (N) orders (client)
-users (1) ──── (N) orders (worker)
+users (1) ──── (N) orders (provider)
 services (1) ── (N) orders
 orders (1) ──── (N) payments
 orders (1) ──── (1) reviews
@@ -64,7 +64,7 @@ Après `seed_data.sql` :
 
 | Type | Quantité | Détails |
 |------|----------|---------|
-| 👥 **Utilisateurs** | 9 | 1 admin + 4 clients + 4 workers |
+| 👥 **Utilisateurs** | 9 | 1 admin + 4 clients + 4 providers |
 | 🚗 **Véhicules** | 7 | Mercedes, Ford, Peugeot, etc. |
 | ⚙️ **Services** | 8 | Dépannage, remorquage, vidange, etc. |
 | 📋 **Commandes** | 9 | Statuts variés (pending, completed, etc.) |
@@ -100,7 +100,7 @@ mysql -u root -p < database/migrations/seed_data.sql
 |------|-------|--------------|
 | 👑 Admin | admin@autoservice.com | password123 |
 | 👤 Client | mohammed.alami@gmail.com | password123 |
-| 🔧 Worker | karim.mechanic@gmail.com | password123 |
+| 🔧 provider | karim.mechanic@gmail.com | password123 |
 
 ---
 
@@ -119,7 +119,7 @@ mysql -u root -p < database/migrations/seed_data.sql
 
 7 entités TypeORM créées dans `backend/src/entities/` :
 
-- **User** : Avec énums UserRole (client/worker/admin)
+- **User** : Avec énums UserRole (client/provider/admin)
 - **Vehicle** : Lié à User (prestataire)
 - **Service** : Services indépendants
 - **Order** : Avec enum OrderStatus (5 états)
@@ -183,11 +183,11 @@ npm run start:dev
 USE auto_service_platform;
 
 -- Lister les commandes
-SELECT o.id, c.full_name AS client, w.full_name AS worker, 
+SELECT o.id, c.full_name AS client, w.full_name AS provider, 
        s.name AS service, o.status, o.price
 FROM orders o
 JOIN users c ON o.client_id = c.id
-LEFT JOIN users w ON o.worker_id = w.id
+LEFT JOIN users w ON o.provider_id = w.id
 JOIN services s ON o.service_id = s.id;
 ```
 
@@ -231,14 +231,14 @@ source database/migrations/seed_data.sql
 
 ### Gestion des utilisateurs
 - ✅ Authentification (email + password_hash)
-- ✅ Rôles (client, worker, admin)
+- ✅ Rôles (client, provider, admin)
 - ✅ Vérification email (is_verified)
 - ✅ Timestamps (created_at, updated_at)
 
 ### Gestion des commandes
 - ✅ Statuts multiples (pending → accepted → in_progress → completed)
 - ✅ Annulation possible
-- ✅ Lien client-worker-service-vehicle
+- ✅ Lien client-provider-service-vehicle
 - ✅ Géolocalisation (location)
 - ✅ Prix dynamique
 
@@ -252,7 +252,7 @@ source database/migrations/seed_data.sql
 - ✅ Note 1-5 étoiles
 - ✅ Commentaire texte
 - ✅ Relation 1-1 avec commande
-- ✅ Lié au client ET au worker
+- ✅ Lié au client ET au provider
 
 ### Notifications
 - ✅ Types (order, payment, system)

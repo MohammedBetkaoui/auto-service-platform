@@ -4,7 +4,7 @@ import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { Avatar } from '../../ui/avatar';
 
-interface WorkerOrder {
+interface providerOrder {
   id: string;
   service: string;
   client: {
@@ -21,7 +21,7 @@ interface WorkerOrder {
   vehicle?: string;
 }
 
-const mockOrders: WorkerOrder[] = [
+const mockOrders: providerOrder[] = [
   {
     id: 'ORD-W001',
     service: 'Lavage Premium',
@@ -56,8 +56,8 @@ const mockOrders: WorkerOrder[] = [
   },
 ];
 
-export function WorkerOrders() {
-  const getStatusConfig = (status: WorkerOrder['status']) => {
+export function providerOrders() {
+  const getStatusConfig = (status: providerOrder['status']) => {
     switch (status) {
       case 'new':
         return {
