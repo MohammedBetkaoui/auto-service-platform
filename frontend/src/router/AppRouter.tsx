@@ -1,4 +1,3 @@
-import React from 'react';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { PublicRoute } from '../components/PublicRoute';
 
@@ -8,8 +7,6 @@ import { DashboardPage } from '../components/DashboardPage';
 import { ForgotPasswordPage } from '../components/ForgotPasswordPage';
 import { ResetPasswordPage } from '../components/ResetPasswordPage';
 import { VerifyEmailPage } from '../components/VerifyEmailPage';
-import { Header } from '../components/Header';
-import { Footer } from '../components/Footer';
 
 // Simple hash-based router helper rendered by App
 export function AppRouter({ currentPage }: { currentPage: string }) {
